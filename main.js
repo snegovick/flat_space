@@ -8,6 +8,10 @@ var logic = function() {
     gamelogic.keydown(gamelogic, kc);
   });
 
+  gamescreen.set_keyup_cb(gamescreen, function(kc) {
+    gamelogic.keyup(gamelogic, kc);
+  });
+
   var drawAll = function() {
     map.draw(map);
     gamelogic.draw(gamelogic);

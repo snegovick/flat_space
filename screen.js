@@ -25,6 +25,11 @@ GameScreen.prototype = {
     window.addEventListener('keydown', cb, true);
   },
 
+  set_keyup_cb: function(self, cb) {
+    window.addEventListener('keyup', cb, true);
+  },
+
+
   get_text_w: function(self, cw, text) {
     return cw*text.length;
   },
@@ -76,7 +81,9 @@ GameScreen.prototype = {
     self.ctx.beginPath();
     self.ctx.moveTo(x1, y1);
     self.ctx.lineTo(x2, y2);
+    //self.ctx.moveTo(x2, y2);
     self.ctx.lineTo(x3, y3);
+    //self.ctx.moveTo(x3, y3);
     self.ctx.lineTo(x1, y1);
     self.ctx.stroke();
     if (orientation != 0) {
@@ -87,6 +94,7 @@ GameScreen.prototype = {
 
   draw: function(self, callback) {
     self.ctx.clearRect(0, 0, self.width, self.height);
+    self.put_rect(self, "#082B3D", 0, self.width/2, self.height/2, self.width, self.height);
     callback();
   }
 };
