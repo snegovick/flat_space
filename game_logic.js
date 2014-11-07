@@ -16,7 +16,7 @@ Player.prototype = {
   draw: function(self) {
     var x = self.x + gamescreen.width/2;
     var y = self.y + 2*gamescreen.height/3;
-    gamescreen.put_triangle(gamescreen, "blue", 0, x, y, -10, 10, 0, -20, 10, 10);
+    gamescreen.put_triangle(gamescreen, "white", 0, x, y, -10, 10, 0, -20, 10, 10);
   }
 };
 
@@ -27,6 +27,7 @@ GameLogic.prototype = {
   const_ticks_in_s: gamescreen.const_fps,
   const_ms_in_s: 1000,
   player: null,
+  background: null,
   left: false,
   right: false,
 
@@ -58,11 +59,14 @@ GameLogic.prototype = {
     self.default_velocity = gamescreen.height/20;
     self.player = new Player();
     self.player.init(self.player);
+    self.background = new Background();
+    self.background.init(self.background);
 
     gamescreen.set_keydown_cb(gamescreen, self.keydown_cb);
   },
 
   draw: function(self) {
+    self.background.draw(self.background);
     if (self.left) {
       self.player.move_x(self.player, -self.default_velocity);
     }

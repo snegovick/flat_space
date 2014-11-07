@@ -78,6 +78,7 @@ GameScreen.prototype = {
     if (orientation != 0) {
       self.ctx.rotate(orientation);
     }
+    self.ctx.strokeStyle = style;
     self.ctx.beginPath();
     self.ctx.moveTo(x1, y1);
     self.ctx.lineTo(x2, y2);
