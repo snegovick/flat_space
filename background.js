@@ -10,6 +10,8 @@ Background.prototype = {
   size2: 3,
   layer1: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   layer2: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  const_layer1_color: "#999999",
+  const_layer2_color: "#777777",
   
   set_fast_speed: function(self) {
     self.current_increment = self.fast_increment;
@@ -33,13 +35,13 @@ Background.prototype = {
     var y = gamescreen.height;
     for (var i = self.start_counter2; i < self.layer2.length; i++) {
       if (self.layer2[i] != 0) {
-        gamescreen.put_rect(gamescreen, "#999999", 0, self.layer2[i], y, self.size2, self.size2);
+        gamescreen.put_rect(gamescreen, self.const_layer2_color, 0, self.layer2[i], y, self.size2, self.size2);
       }
       y-=gamescreen.height/self.layer2.length;
     }
     for (var i = 0; i < self.start_counter2; i++) {
       if (self.layer2[i] != 0) {
-        gamescreen.put_rect(gamescreen, "#999999", 0, self.layer2[i], y, self.size2, self.size2);
+        gamescreen.put_rect(gamescreen, self.const_layer2_color, 0, self.layer2[i], y, self.size2, self.size2);
       }
       y-=gamescreen.height/self.layer2.length;
     }
@@ -47,13 +49,13 @@ Background.prototype = {
     y = gamescreen.height;
     for (var i = self.start_counter1; i < self.layer1.length; i++) {
       if (self.layer1[i] != 0) {
-        gamescreen.put_rect(gamescreen, "white", 0, self.layer1[i], y, self.size1, self.size1);
+        gamescreen.put_rect(gamescreen, self.const_layer1_color, 0, self.layer1[i], y, self.size1, self.size1);
       }
       y-=gamescreen.height/self.layer1.length;
     }
     for (var i = 0; i < self.start_counter1; i++) {
       if (self.layer1[i] != 0) {
-        gamescreen.put_rect(gamescreen, "white", 0, self.layer1[i], y, self.size1, self.size1);
+        gamescreen.put_rect(gamescreen, self.const_layer1_color, 0, self.layer1[i], y, self.size1, self.size1);
       }
       y-=gamescreen.height/self.layer1.length;
     }

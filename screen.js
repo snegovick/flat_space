@@ -118,6 +118,19 @@ GameScreen.prototype = {
     self.ctx.translate(-x, -y);
   },
 
+  circle_in_screen: function(self, x, y, r) {
+    if ((x+r)<0 || (x-r)>self.width || (y+r)<0 || (y-r)>self.height) {
+      // console.log("w:"+self.width);
+      // console.log("h:"+self.height);
+      // console.log("x+r:"+(x+r));
+      // console.log("x-r:"+(x-r));
+      // console.log("y-r:"+(y-r));
+      // console.log("y+r:"+(y+r));
+      return false;
+    }
+    return true;
+  },
+
   draw: function(self, callback) {
     self.ctx.clearRect(0, 0, self.width, self.height);
     self.put_rect(self, "#082B3D", 0, self.width/2, self.height/2, self.width, self.height);
