@@ -16,6 +16,7 @@ Progress.prototype = {
   xoff: 0,
   yoff: 50,
   margin: 2,
+  stage_complete: false,
 
   init: function(self) {
     self.xoff = gamescreen.width-50;
@@ -33,6 +34,10 @@ Progress.prototype = {
     self.set_normal_speed(self);
   },
 
+  get_stage_complete: function(self) {
+    return self.stage_complete;
+  },
+
   set_fast_speed: function(self) {
     self.increment = self.fast_inc;
   },
@@ -42,6 +47,7 @@ Progress.prototype = {
   },
 
   next_stage: function(self) {
+    self.stage_complete = false;
     self.stage++;
     self.stage_progress = 0;
     if (self.stage > self.stages.length) {
@@ -66,6 +72,10 @@ Progress.prototype = {
       var current_pos = gamescreen.height-((self.stage+stage_progress_px)*single_stage_len_px+self.yoff);
       gamescreen.put_rect(gamescreen, "white", 0, self.xoff+self.width/2, current_pos-self.margin, 2, 2);
       self.stage_progress ++;
+      if (self.stage_progress > self.stage_lengths[self.stage]) {
+        self.stage_complete = true;
+        self.stage_progress = self.stage_lengths[self.stage];
+      }
     }
   }
 };

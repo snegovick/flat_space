@@ -16,8 +16,8 @@ GameLogic.prototype = {
   asteroids: [null, null, null, null, null, null],
 
   keydown: function(self, event) {
-    //console.log("down");
-    //console.log(event);
+    // console.log("down");
+    // console.log(event);
     if (event.keyCode == 16) { // shift
       self.fast_forward = true;
       progress.set_fast_speed(progress);
@@ -27,6 +27,9 @@ GameLogic.prototype = {
           self.asteroids[i].set_fast_speed(self.asteroids[i]);
         }
       }
+    }
+    if (event.keyCode == 32) { // space
+      self.player.torpedo_launch(self.player);
     }
     if (event.keyCode == 65) { // a
       self.left = true;
@@ -179,6 +182,9 @@ GameLogic.prototype = {
     gamescreen.put_text(gamescreen, "bold 20px Arial", "black", "Score: "+self.score, 100, 100);
     self.player.draw(self.player);
     progress.draw(progress);
+    if (progress.get_stage_complete(progress)) {
+      progress.next_stage(progress);
+    }
     
   }
 };
