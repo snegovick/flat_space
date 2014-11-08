@@ -34,6 +34,11 @@ GameScreen.prototype = {
     return cw*text.length;
   },
 
+  put_image: function(self, image, x, y) {
+    //console.log(image);
+    self.ctx.drawImage(image, x, y);
+  },
+
   put_text: function(self, font, style, text, px, py) {
     var old_color = self.ctx.fillStyle;
     self.ctx.fillStyle = style;

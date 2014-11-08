@@ -9,9 +9,8 @@ Asteroid.prototype = {
   const_max_speed: 5,
   const_min_speed: 3,
   const_max_ang_vel: 0.3,
-  const_max_norm_ast_r: 50,
   const_max_ast_r: 0,
-  const_max_r: [10, 30, 50, 70, 90],
+  const_max_r: [10, 20, 30, 40, 50],
   size: 1,
   co: 0, //cos of orientation
   so: 0, //sin of orientation
