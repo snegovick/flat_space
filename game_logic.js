@@ -20,6 +20,7 @@ GameLogic.prototype = {
     //console.log(event);
     if (event.keyCode == 16) { // shift
       self.fast_forward = true;
+      progress.set_fast_speed(progress);
       self.background.set_fast_speed(self.background);
       for (var i = 0; i < self.asteroids.length; i++) {
         if (self.asteroids[i] != null) {
@@ -40,6 +41,7 @@ GameLogic.prototype = {
     //console.log(event);
     if (event.keyCode == 16) { // shift
       self.fast_forward = false;
+      progress.set_normal_speed(progress);
       self.background.set_normal_speed(self.background);
       for (var i = 0; i < self.asteroids.length; i++) {
         if (self.asteroids[i] != null) {
