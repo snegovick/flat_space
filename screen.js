@@ -76,7 +76,7 @@ GameScreen.prototype = {
     self.ctx.lineTo(points[0][0], points[0][1]);
     self.ctx.stroke();
     self.ctx.strokeStyle = old_color;
-    self.ctx.lineWidth = old_width;    
+    self.ctx.lineWidth = old_width;
     if (orientation != 0) {
       self.ctx.rotate(-orientation);
     }
@@ -98,7 +98,10 @@ GameScreen.prototype = {
     self.ctx.translate(-x, -y);
   },
 
-  put_triangle: function(self, style, orientation, x, y, x1, y1, x2, y2, x3, y3) {
+  put_triangle: function(self, style, orientation, width, x, y, x1, y1, x2, y2, x3, y3) {
+    width = width || 5;
+    var old_width = self.ctx.lineWidth;
+    self.ctx.lineWidth = width;
     self.ctx.translate(x, y);
     if (orientation != 0) {
       self.ctx.rotate(orientation);
@@ -116,6 +119,7 @@ GameScreen.prototype = {
       self.ctx.rotate(-orientation);
     }
     self.ctx.translate(-x, -y);
+    self.ctx.lineWidth = old_width;
   },
 
   circle_in_screen: function(self, x, y, r) {

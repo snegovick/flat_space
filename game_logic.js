@@ -19,7 +19,7 @@ Player.prototype = {
   draw: function(self) {
     self.x = self.vx + gamescreen.width/2;
     self.y = self.vy + 4*gamescreen.height/5;
-    gamescreen.put_triangle(gamescreen, "white", 0, self.x, self.y, -10, 10, 0, -20, 10, 10);
+    gamescreen.put_triangle(gamescreen, "white", 0, 2, self.x, self.y, -10, 10, 0, -20, 10, 10);
   }
 };
 
@@ -142,7 +142,6 @@ GameLogic.prototype = {
     if (event.keyCode == 68) { // d
       self.right = true;
     }
-
   },
 
   keyup: function(self, event) {
