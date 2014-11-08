@@ -1,26 +1,31 @@
 function Background() {};
 
 Background.prototype = {
-  frame_counter1: 0,
-  frame_counter2: 0,
   start_counter1: 0,
   start_counter2: 0,
+  fast_increment: 3,
+  normal_increment: 1,
+  current_increment: 1,
   size1: 5,
   size2: 3,
   layer1: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   layer2: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  
+  set_fast_speed: function(self) {
+    self.current_increment = self.fast_increment;
+  },
+
+  set_normal_speed: function(self) {
+    self.current_increment = self.normal_increment;
+  },
 
   draw: function(self) {
-    if (self.frame_counter1>1) {
-      self.start_counter1++;
-      self.start_counter1 %= self.layer1.length;
-      self.frame_counter1 = 0;
-    }
-    if (self.frame_counter2>1) {
-      self.start_counter2++;
-      self.start_counter2 %= self.layer2.length;
-      self.frame_counter2 = 0;
-    }
+    self.start_counter1 += self.current_increment;
+    self.start_counter1 %= self.layer1.length;
+    self.frame_counter1 = 0;
+    self.start_counter2 += self.current_increment;
+    self.start_counter2 %= self.layer2.length;
+    self.frame_counter2 = 0;
 
     self.frame_counter1++;
     self.frame_counter2++;

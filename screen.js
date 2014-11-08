@@ -58,6 +58,31 @@ GameScreen.prototype = {
     self.ctx.lineWidth = old_width;
   },
 
+  put_multi_line: function(self, style, x, y, orientation, points, width) {
+    width = width || 5;
+    self.ctx.translate(x, y);
+    if (orientation != 0) {
+      self.ctx.rotate(orientation);
+    }
+    var old_color = self.ctx.fillStyle;
+    var old_width = self.ctx.lineWidth;
+    self.ctx.strokeStyle = style;
+    self.ctx.lineWidth = width;
+    self.ctx.beginPath();
+    self.ctx.moveTo(points[0][0], points[0][1]);
+    for (var i = 1; i < points.length; i++) {
+      self.ctx.lineTo(points[i][0], points[i][1]);
+    }
+    self.ctx.lineTo(points[0][0], points[0][1]);
+    self.ctx.stroke();
+    self.ctx.strokeStyle = old_color;
+    self.ctx.lineWidth = old_width;    
+    if (orientation != 0) {
+      self.ctx.rotate(-orientation);
+    }
+    self.ctx.translate(-x, -y);
+  },
+
   put_rect: function(self, style, orientation, x, y, w, h) {
     self.ctx.translate(x, y);
     if (orientation != 0) {
