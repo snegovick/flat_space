@@ -8,8 +8,8 @@ Progress.prototype = {
   progress_buffer: null,
   stage_lengths: [1000, 10000, 10000, 10000],
   increment: 0,
-  fast_inc: 3,
-  normal_inc: 1,
+  cur_speed_step: 0,
+  speed_steps: [1, 2, 3, 4, 5],
   stage_progress: 0,
   width: 30,
   height: 0,
@@ -38,13 +38,26 @@ Progress.prototype = {
     return self.stage_complete;
   },
 
-  set_fast_speed: function(self) {
-    self.increment = self.fast_inc;
+  set_speed_step: function(self, step) {
+    self.cur_speed_step = step;
+    if (self.cur_speed_step >= self.speed_steps.length) {
+      self.cur_speed_step = self.speed_steps.length - 1;
+    }
+    self.increment = self.speed_steps[self.cur_speed_step];    
   },
 
   set_normal_speed: function(self) {
-    self.increment = self.normal_inc;
+    self.increment = self.speed_steps[0];
   },
+
+  inc_speed: function(self) {
+    self.cur_speed_step ++;
+    if (self.cur_speed_step >= self.speed_steps.length) {
+      self.cur_speed_step = self.speed_steps.length - 1;
+    }
+    self.increment = self.speed_steps[self.cur_speed_step];
+  },
+
 
   next_stage: function(self) {
     self.stage_complete = false;

@@ -25,7 +25,7 @@ Torpedo.prototype = {
   },
 
   explode: function(self) {
-    
+    self.dead = true;
   },
 
   draw: function(self) {

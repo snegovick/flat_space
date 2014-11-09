@@ -16,23 +16,35 @@ Asteroid.prototype = {
   co: 0, //cos of orientation
   so: 0, //sin of orientation
   ttl: 20,
-  speed_addition: 0,
-  const_fast_speed: 15,
-  const_slow_speed: 5,
   x: 0,
   y: 0,
   highlight: false,
+  speed_steps: [5, 10, 15, 20, 25],
+  speed_addition: 5,
+  cur_speed_step: 0,
 
   check_ttl: function(self) {
     return self.ttl;
   },
 
-  set_fast_speed: function(self) {
-    self.speed_addition = self.const_fast_speed;    
+  set_speed_step: function(self, step) {
+    self.cur_speed_step = step;
+    if (self.cur_speed_step >= self.speed_steps.length) {
+      self.cur_speed_step = self.speed_steps.length - 1;
+    }
+    self.speed_addition = self.speed_steps[self.cur_speed_step];
   },
 
   set_normal_speed: function(self) {
-    self.speed_addition = self.const_slow_speed;
+    self.speed_addition = self.speed_steps[0];
+  },
+
+  inc_speed: function(self) {
+    self.cur_speed_step ++;
+    if (self.cur_speed_step >= self.speed_steps.length) {
+      self.cur_speed_step = self.speed_steps.length - 1;
+    }
+    self.speed_addition = self.speed_steps[self.cur_speed_step];
   },
   
   calc_trig: function(self, orientation) {
@@ -65,7 +77,7 @@ Asteroid.prototype = {
     self.start_orientation = self.orientation;
     self.calc_trig(self, self.orientation);
     self.speed = Math.random()*(self.const_max_speed-self.const_min_speed) + self.const_min_speed;
-    self.speed_addition = self.const_slow_speed;
+    self.speed_addition = self.speed_steps[self.cur_speed_step];
     self.x = Math.random()*gamescreen.width;
     self.y = -self.const_max_ast_r;
     self.angular_velocity = 2*self.const_max_ang_vel*(Math.random()-0.5);
