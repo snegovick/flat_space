@@ -71,7 +71,7 @@ Progress.prototype = {
       
       var current_pos = gamescreen.height-((self.stage+stage_progress_px)*single_stage_len_px+self.yoff);
       gamescreen.put_rect(gamescreen, "white", 0, self.xoff+self.width/2, current_pos-self.margin, 2, 2);
-      self.stage_progress ++;
+      self.stage_progress += self.increment;
       if (self.stage_progress > self.stage_lengths[self.stage]) {
         self.stage_complete = true;
         self.stage_progress = self.stage_lengths[self.stage];

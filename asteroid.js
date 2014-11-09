@@ -11,6 +11,7 @@ Asteroid.prototype = {
   const_max_ang_vel: 0.3,
   const_max_ast_r: 0,
   const_max_r: [10, 20, 30, 40, 50],
+  const_colors: ["#eee", "#ccc", "#D9DE54", "#EDB64E", "#E81409"],
   size: 1,
   co: 0, //cos of orientation
   so: 0, //sin of orientation
@@ -38,6 +39,10 @@ Asteroid.prototype = {
     self.orientation = orientation;
     self.co = Math.cos(self.orientation);
     self.so = Math.sin(self.orientation);    
+  },
+
+  get_size: function(self) {
+    return self.size;
   },
 
   init: function(self, size) {
@@ -73,10 +78,10 @@ Asteroid.prototype = {
     self.y+=self.speed_addition+self.speed*self.so;
     self.orientation+=self.angular_velocity;
     self.orientation%=Math.PI*2;
-    var style = "white";
-    if (self.highlight) {
-      style = "red";
-    }
+    var style = self.const_colors[self.size];
+    // if (self.highlight) {
+    //   style = "red";
+    // }
     gamescreen.put_multi_line(gamescreen, style, self.x, self.y, self.orientation, self.points, 2);
   }
 };
