@@ -9,6 +9,16 @@ Player.prototype = {
   torpedo: null,
   cur_speed_step: 0,
   speed_steps: [0,0,0,0,0],
+  const_x_velocity: 0,
+  pause: false,
+
+  set_pause: function(self) {
+    self.pause = true;
+  },
+
+  unset_pause: function(self) {
+    self.pause = false;
+  },
 
   set_speed_step: function(self, step) {
     self.cur_speed_step = step;
@@ -39,11 +49,18 @@ Player.prototype = {
   },
 
   init: function(self) {
+    self.const_x_velocity = gamescreen.height/30;
   },
 
-  move_x: function(self, delta) {
-    if ((Math.abs(self.vx+delta)<gamescreen.width/2)) {
-      self.vx+=delta;
+  move_left: function(self) {
+    if ((self.vx-self.const_x_velocity>-gamescreen.width/2)) {
+      self.vx-=self.const_x_velocity;
+    }    
+  },
+
+  move_right: function(self) {
+    if (self.vx+self.const_x_velocity<gamescreen.width/2) {
+      self.vx+=self.const_x_velocity;
     }
   },
 
@@ -60,8 +77,10 @@ Player.prototype = {
   },
 
   draw: function(self) {
-    self.x = self.vx + gamescreen.width/2;
-    self.y = self.vy + 4*gamescreen.height/5;
+    if (! self.pause) {
+      self.x = self.vx + gamescreen.width/2;
+      self.y = self.vy + 4*gamescreen.height/5;
+    }
     gamescreen.put_triangle(gamescreen, "white", 0, 2, self.x, self.y, -10, 10, 0, -20, 10, 10);
     if (self.torpedo != null) {
       if (self.torpedo.is_dead(self.torpedo)) {

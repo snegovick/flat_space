@@ -13,6 +13,15 @@ Background.prototype = {
   cur_speed_step: 0,
   current_increment: 1,
   layer1_xoffset: 0,
+  pause: false,
+
+  set_pause: function(self) {
+    self.pause = true;
+  },
+
+  unset_pause: function(self) {
+    self.pause = false;
+  },
   
   set_speed_step: function(self, step) {
     self.cur_speed_step = step;
@@ -40,15 +49,17 @@ Background.prototype = {
   },
 
   draw: function(self) {
-    self.start_counter1 += self.current_increment;
-    self.start_counter1 %= self.layer1.length;
-    self.frame_counter1 = 0;
-    self.start_counter2 += self.current_increment;
-    self.start_counter2 %= self.layer2.length;
-    self.frame_counter2 = 0;
-
-    self.frame_counter1++;
-    self.frame_counter2++;
+    if (! self.pause) {
+      self.start_counter1 += self.current_increment;
+      self.start_counter1 %= self.layer1.length;
+      self.frame_counter1 = 0;
+      self.start_counter2 += self.current_increment;
+      self.start_counter2 %= self.layer2.length;
+      self.frame_counter2 = 0;
+      
+      self.frame_counter1++;
+      self.frame_counter2++;
+    }
 
     var y = gamescreen.height;
     for (var i = self.start_counter2; i < self.layer2.length; i++) {

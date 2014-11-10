@@ -7,7 +7,7 @@ GameScreen.prototype = {
   ctx: null,
   const_fps: 30,
   frame_timeout: 0,
-
+  text_display_array: [],
 
   init: function(self) {
     self.frame_timeout = 1000/self.const_fps;
@@ -28,7 +28,6 @@ GameScreen.prototype = {
   set_keyup_cb: function(self, cb) {
     window.addEventListener('keyup', cb, true);
   },
-
 
   get_text_w: function(self, cw, text) {
     return cw*text.length;
@@ -61,6 +60,34 @@ GameScreen.prototype = {
     self.ctx.stroke();
     self.ctx.strokeStyle = old_color;
     self.ctx.lineWidth = old_width;
+  },
+
+  put_arrow: function(self, style, x, y, orientation, l, width, head_sz) {
+    head_sz = head_sz || 10;
+    width = width || 5;
+    self.ctx.translate(x, y);
+    if (orientation != 0) {
+      self.ctx.rotate(orientation);
+    }
+    var old_color = self.ctx.fillStyle;
+    var old_width = self.ctx.lineWidth;
+    self.ctx.strokeStyle = style;
+    self.ctx.lineWidth = width;
+    self.ctx.beginPath();
+    self.ctx.moveTo(0, 0);
+    self.ctx.lineTo(l-head_sz, 0);
+    self.ctx.lineTo(l-head_sz, head_sz/2);
+    self.ctx.lineTo(l, 0);
+    self.ctx.lineTo(l-head_sz, -head_sz/2);
+    self.ctx.lineTo(l-head_sz, 0);
+    self.ctx.stroke();
+    self.ctx.strokeStyle = old_color;
+    self.ctx.lineWidth = old_width;
+    if (orientation != 0) {
+      self.ctx.rotate(-orientation);
+    }
+    self.ctx.translate(-x, -y);
+
   },
 
   put_multi_line: function(self, style, x, y, orientation, points, width) {

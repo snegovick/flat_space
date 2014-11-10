@@ -22,9 +22,18 @@ Asteroid.prototype = {
   speed_steps: [5, 10, 15, 20, 25],
   speed_addition: 5,
   cur_speed_step: 0,
+  pause: false,
 
   check_ttl: function(self) {
     return self.ttl;
+  },
+
+  set_pause: function(self) {
+    self.pause = true;
+  },
+
+  unset_pause: function(self) {
+    self.pause = false;
   },
 
   set_speed_step: function(self, step) {
@@ -89,11 +98,13 @@ Asteroid.prototype = {
   },
 
   draw: function(self) {
-    self.ttl --;
-    self.x+=self.speed*self.co;
-    self.y+=self.speed_addition+self.speed*self.so;
-    self.orientation+=self.angular_velocity;
-    self.orientation%=Math.PI*2;
+    if (! self.pause) {
+      self.ttl --;
+      self.x+=self.speed*self.co;
+      self.y+=self.speed_addition+self.speed*self.so;
+      self.orientation+=self.angular_velocity;
+      self.orientation%=Math.PI*2;
+    }
     var style = self.const_colors[self.size];
     // if (self.highlight) {
     //   style = "red";
