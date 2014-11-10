@@ -78,7 +78,7 @@ GameScreen.prototype = {
     for (var i = 1; i < points.length; i++) {
       self.ctx.lineTo(points[i][0], points[i][1]);
     }
-    self.ctx.lineTo(points[0][0], points[0][1]);
+    //self.ctx.lineTo(points[0][0], points[0][1]);
     self.ctx.stroke();
     self.ctx.strokeStyle = old_color;
     self.ctx.lineWidth = old_width;

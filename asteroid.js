@@ -36,6 +36,7 @@ Asteroid.prototype = {
   },
 
   set_normal_speed: function(self) {
+    self.cur_speed_step = 0;
     self.speed_addition = self.speed_steps[0];
   },
 
@@ -73,6 +74,9 @@ Asteroid.prototype = {
       self.points[i][1] = r*Math.sin(angle);
       angle+=angle_increment;
     }
+    var last = self.points.length-1;
+    self.points[last][0] = self.points[0][0];
+    self.points[last][1] = self.points[0][1];
     self.orientation = (0.1+Math.random()*0.8)*Math.PI;
     self.start_orientation = self.orientation;
     self.calc_trig(self, self.orientation);

@@ -7,6 +7,36 @@ Player.prototype = {
   y: 0,
   r: 10,
   torpedo: null,
+  cur_speed_step: 0,
+  speed_steps: [0,0,0,0,0],
+
+  set_speed_step: function(self, step) {
+    self.cur_speed_step = step;
+    if (self.cur_speed_step >= self.speed_steps.length) {
+      self.cur_speed_step = self.speed_steps.length - 1;
+    }
+    if (self.torpedo!=null) {
+      self.torpedo.set_speed_step(self.torpedo, step);
+    }
+  },
+
+  set_normal_speed: function(self) {
+    self.cur_speed_step = 0;
+    if (self.torpedo!=null) {
+      self.torpedo.set_normal_speed(self.torpedo);
+    }
+  },
+
+  inc_speed: function(self) {
+    self.cur_speed_step ++;
+    if (self.cur_speed_step >= self.speed_steps.length) {
+      self.cur_speed_step = self.speed_steps.length - 1;
+    }
+    if (self.torpedo!=null) {
+      self.torpedo.inc_speed(self.torpedo);
+    }
+
+  },
 
   init: function(self) {
   },
@@ -17,10 +47,11 @@ Player.prototype = {
     }
   },
 
-  torpedo_launch: function(self) {
+  launch_torpedo: function(self, asteroids) {
     if (self.torpedo == null) {
       self.torpedo = new Torpedo();
-      self.torpedo.init(self.torpedo, self.x, self.y-self.r);
+      self.torpedo.init(self.torpedo, self.x, self.y-self.r, asteroids);
+      self.torpedo.set_speed_step(self.torpedo, self.cur_speed_step);
     }
   },
 

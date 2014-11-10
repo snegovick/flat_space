@@ -24,6 +24,7 @@ GameLogic.prototype = {
       self.speed_step ++;
       progress.inc_speed(progress);
       self.background.inc_speed(self.background);
+      self.player.inc_speed(self.player);
       for (var i = 0; i < self.natural_asteroids; i++) {
         if (self.asteroids[i] != null) {
           self.asteroids[i].inc_speed(self.asteroids[i]);
@@ -31,7 +32,7 @@ GameLogic.prototype = {
       }
     }
     if (event.keyCode == 32) { // space
-      self.player.torpedo_launch(self.player);
+      self.player.launch_torpedo(self.player, self.asteroids);
     }
     if (event.keyCode == 65) { // a
       self.left = true;
@@ -76,6 +77,7 @@ GameLogic.prototype = {
   set_normal_speed: function(self) {
     self.speed_step = 0;
     progress.set_normal_speed(progress);
+    self.player.set_normal_speed(self.player);
     self.background.set_normal_speed(self.background);
     for (var i = 0; i < self.asteroids.length; i++) {
       if (self.asteroids[i] != null) {
@@ -127,9 +129,8 @@ GameLogic.prototype = {
   },
 
   check_torpedo_collision: function(self, torpedo, asteroid) {
-    if (pt_to_pt_dist([torpedo.x, torpedo.y], [asteroid.x, asteroid.y])<(asteroid.const_max_ast_r+torpedo.r)) {
+    if (pt_to_pt_dist([torpedo.x, torpedo.y], [asteroid.x, asteroid.y])<(asteroid.const_max_ast_r+torpedo.r)*0.8) {
       console.log("torpedo collision");
-      torpedo.explode(torpedo);
       return true;
     }
     return false;
@@ -217,7 +218,8 @@ GameLogic.prototype = {
       for (var i = 0; i < self.asteroids.length; i++) {
         if (self.asteroids[i] != null) {     
           if (self.check_torpedo_collision(self, torpedo, self.asteroids[i])) {
-            console.log("t collision");
+            torpedo.draw(torpedo);
+            torpedo.explode(torpedo);
             var sz = self.asteroids[i].get_size(self.asteroids[i]);
             if (sz > 3) {
               hud.inc_fuel(hud);
