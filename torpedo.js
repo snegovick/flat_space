@@ -43,9 +43,10 @@ Torpedo.prototype = {
     }
   },
   
-  init: function(self, x, y, asteroids) {
+  init: function(self, x, y, asteroids, orientation, max_ang_vel) {
     self.trail = [];
-    self.orientation = -Math.PI/2;
+    self.const_max_ang_vel = self.const_max_ang_vel || max_ang_vel;
+    self.orientation = orientation || -Math.PI/2;
     self.x = x;
     self.y = y;
     self.sx = x;
@@ -69,11 +70,12 @@ Torpedo.prototype = {
     if (idx == -1) {
       self.tx = self.x;
       self.ty = self.y-10000;
-    } else {
-      self.asteroid_id = idx;
-      self.tx = asteroids[idx].x;
-      self.ty = asteroids[idx].y;
+      return false;
     }
+    self.asteroid_id = idx;
+    self.tx = asteroids[idx].x;
+    self.ty = asteroids[idx].y;
+    return true;
   },
 
   is_dead: function(self) {

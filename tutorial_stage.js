@@ -22,7 +22,10 @@ Tutorial_Stage.prototype = {
   wait_grip_msg: 17,
   show_outro: 18,
   wait_outro: 19,
+  wait_checkpoint: 20,
+  show_jumpgate_msg: 21,
 
+  checkpoint_progress: 900,
 
   state: 0,
   
@@ -78,6 +81,10 @@ Tutorial_Stage.prototype = {
               "    Updated license transfer ...",
               "    Updated license transefer complete",
               "Communication over."],
+
+  msg_jumpgate: ["Jumpgate anti-asteroid protection system: Mining vessel identified", 
+                 "    Anti-asteroid weapons disabled.",
+                 "    Proceed to jumpgate"],
 
   get_name: function(self) {
     return self.name;
@@ -149,28 +156,28 @@ Tutorial_Stage.prototype = {
 
   draw: function(self) {
     switch (self.state) {
-      case self.stop_after_st_dis:
+    case self.stop_after_st_dis:
       if (progress.is_stage_display_done(progress)) {
         //gamelogic.set_pause(gamelogic);
         self.state = self.show_greet_msg;
       }
       break;
 
-      case self.show_greet_msg:
+    case self.show_greet_msg:
       if (self.display_message_delay(self, self.msg_greet)) {
         self.state = self.wait_greet_msg;
         self.set_delay(self, self.const_delay);
       }
       break;
 
-      case self.wait_greet_msg:
+    case self.wait_greet_msg:
       self.display_message(self, self.msg_greet);
       if (self.get_delay(self)) {
         self.state = self.show_controls_msg;
       }
       break;
 
-      case self.show_controls_msg:
+    case self.show_controls_msg:
       if (self.display_message_delay(self, self.msg_control)) {
         self.state = self.show_left_controls;
         self.msg_greet.push("Press A");
@@ -179,7 +186,7 @@ Tutorial_Stage.prototype = {
       }
       break;
 
-      case self.show_left_controls:
+    case self.show_left_controls:
       var player = gamelogic.player;
       var off = player.r*2;
       var l = 50;
@@ -194,7 +201,7 @@ Tutorial_Stage.prototype = {
       }
       break;
 
-      case self.show_controls_ok:
+    case self.show_controls_ok:
       self.display_message(self, self.msg_control);
       if (self.get_delay(self)) {
         self.msg_greet.pop();
@@ -204,7 +211,7 @@ Tutorial_Stage.prototype = {
       }
       break;
 
-      case self.show_right_controls:
+    case self.show_right_controls:
       var player = gamelogic.player;
       var off = player.r*2;
       var l = 50;
@@ -219,7 +226,7 @@ Tutorial_Stage.prototype = {
       }
       break;
 
-      case self.show_controls_ok2:
+    case self.show_controls_ok2:
       self.display_message(self, self.msg_control);
       if (self.get_delay(self)) {
         self.msg_greet.pop();
@@ -228,7 +235,7 @@ Tutorial_Stage.prototype = {
       }
       break;
 
-      case self.show_accel_controls:
+    case self.show_accel_controls:
       if (self.display_message_delay(self, self.msg_accel)) {
         hud.set_fuel_level(hud, 100);
         self.state = self.check_accel;
@@ -237,7 +244,7 @@ Tutorial_Stage.prototype = {
       }
       break;
 
-      case self.check_accel:
+    case self.check_accel:
       var player = gamelogic.player;
       var off = player.r*2;
       var l = 50;
@@ -253,7 +260,7 @@ Tutorial_Stage.prototype = {
       }
       break;
 
-      case self.check_accel_ok:
+    case self.check_accel_ok:
       self.display_message(self, self.msg_accel);
       if (self.get_delay(self)) {
         gamelogic.set_normal_speed(gamelogic);
@@ -262,21 +269,21 @@ Tutorial_Stage.prototype = {
       }
       break;
 
-      case self.show_mining_intro:
+    case self.show_mining_intro:
       if (self.display_message_delay(self, self.msg_mining)) {
         self.state = self.wait_mining_intro;
         self.set_delay(self, self.const_delay);
       }
       break;
 
-      case self.wait_mining_intro:
+    case self.wait_mining_intro:
       self.display_message(self, self.msg_mining);
       if (self.get_delay(self)) {
         self.state = self.show_torpedo_controls;
       }
       break;
       
-      case self.show_torpedo_controls:
+    case self.show_torpedo_controls:
       if (self.display_message_delay(self, self.msg_torpedo)) {
         var player = gamelogic.player;
         var off = player.r*2;
@@ -289,7 +296,7 @@ Tutorial_Stage.prototype = {
       }
       break;
 
-      case self.check_torpedo_launch:
+    case self.check_torpedo_launch:
       self.display_message(self, self.msg_torpedo);
       if (self.get_wait_keycode_state(self)) {
         self.msg_torpedo.pop();
@@ -299,7 +306,7 @@ Tutorial_Stage.prototype = {
       }
       break;
 
-      case self.wait_grip:
+    case self.wait_grip:
       self.display_message(self, self.msg_torpedo);
       if (self.get_delay(self)) {
         self.msg_torpedo.pop();
@@ -307,36 +314,50 @@ Tutorial_Stage.prototype = {
       }
       break;
 
-      case self.show_grip_msg:
+    case self.show_grip_msg:
       if (self.display_message_delay(self, self.msg_grip)) {
         self.state = self.wait_grip_msg;
         self.set_delay(self, self.const_delay);
       }
       break;
 
-      case self.wait_grip_msg:
+    case self.wait_grip_msg:
       self.display_message(self, self.msg_grip);
       if (self.get_delay(self)) {
         self.state = self.show_outro;
       }
       break;
 
-      case self.show_outro:
+    case self.show_outro:
       if (self.display_message_delay(self, self.msg_outro)) {
         self.state = self.wait_outro;
         self.set_delay(self, self.const_delay);
       }
       break;
-
-      case self.wait_outro:
+      
+    case self.wait_outro:
       self.display_message(self, self.msg_outro);
       if (self.get_delay(self)) {
-        self.state ++;
+        self.state = self.wait_checkpoint;
+        progress.set_count_progress(progress);
+        progress.set_display_progress(progress);
+        gamelogic.set_generate_asteroids(gamelogic);
       }
       break;
 
+    case self.wait_checkpoint:
+      if (progress.get_progress(progress)>self.checkpoint_progress) {
+        self.state = self.show_jumpgate_msg;
+      }
+      break;
 
-      default: 
+    case self.show_jumpgate_msg:
+      if (self.display_message_delay(self, self.msg_jumpgate)) {
+        self.state ++;
+      }
+      break;
+      
+    default: 
       break;
     }
   }

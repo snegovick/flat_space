@@ -105,6 +105,10 @@ Progress.prototype = {
     self.display = false;
   },
 
+  get_progress: function(self) {
+    return self.stage_progress;
+  },
+
   draw: function(self) {
     if (self.stage_name_display_counter > 0) {
       if (! self.pause) {
