@@ -4,18 +4,26 @@ Tutorial_Stage.prototype = {
   name: "Tutorial",
   stop_after_st_dis: 0,
   show_greet_msg: 1,
-  show_left_controls: 2,
-  show_controls_ok: 3,
-  show_right_controls: 4,
-  show_controls_ok2: 5,
-  show_accel_controls: 6,
-  check_accel: 7,
-  check_accel_ok: 8,
-  show_mining_intro: 9,
-  wait_mining_intro: 10,
-  show_torpedo_controls: 11,
-  check_torpedo_launch: 12,
-  wait_grip: 13,
+  wait_greet_msg: 2,
+  show_controls_msg: 3,
+  show_left_controls: 4,
+  show_controls_ok: 5,
+  show_right_controls: 6,
+  show_controls_ok2: 7,
+  show_accel_controls: 8,
+  check_accel: 9,
+  check_accel_ok: 10,
+  show_mining_intro: 11,
+  wait_mining_intro: 12,
+  show_torpedo_controls: 13,
+  check_torpedo_launch: 14,
+  wait_grip: 15,
+  show_grip_msg: 16,
+  wait_grip_msg: 17,
+  show_outro: 18,
+  wait_outro: 19,
+
+
   state: 0,
   
   delay_ctr: 0,
@@ -27,23 +35,49 @@ Tutorial_Stage.prototype = {
   text_disp_ctr: 0,
   const_text_delay: 30,
   text_line: 0,
+  
+  msg_greet: ["Repair bot: Loading random greeting message ...",
+              "    Mining industries corp. greets you!",
+              "    Captain, this is your refurbished vessel.",
+              "    It was upgraded to comply with latest industry standard.",
+              "    You have to take this training program in order to get mining license."],
 
-  msg_greet: ["Repair bot: Ok, captain, this is your refurbished vessel.",
-             "    It is upgraded to be controlled with keyboard.",
-             "    Try maneuvering left and right.",
-             "    This may help you avoid asteroids in the future."],
+  msg_control: ["Repair bot: Loading basic control course ...",
+                "    Your vessel is upgraded to be controlled with keyboard.",
+                "    Try maneuvering left and right.",
+                "    This may help you avoid asteroids in the future."],
 
   msg_accel: ["Repair bot: Also, the vessel now has 5-step acceleration engine",
-             "    Every step takes 100 units of fuel to accelerate.",
-             "    You have some fuel to try."],
-
-  msg_mining: ["Repair bot: As a part of refurbishment and update program,",
+              "    Every step takes 100 units of fuel to accelerate.",
+              "    You have some fuel to try."],
+  
+  msg_mining: ["Repair bot: Loading basic mining course ...",
+               "    As a part of refurbishment and update program,",
                "    the mining gun was replaced with mining torpedo.",
                "    It is a little bit smarter than a usual gun,",
                "    but dont count too much on that"],
 
   msg_torpedo: ["Repair bot: I will put an average asteroid on your course.",
-               "    Use your torpedo to destroy it."],
+                "    Use your torpedo to destroy it."],
+
+  msg_grip: ["Repair bot: Loading grip training course ...",
+             "    Error: grip is automatic, no training needed",
+             "    Proceed"],
+
+  msg_luck: ["Repair bot: Loading jump engine training course ...",
+             "    Human brain is not well suited for space jumps.",
+             "    Thats why industry standard assumes automating every task.",
+             "    As a part of automation task, this vessel was equiped",
+             "    with luck-driven jump engine.",
+             "    So, captain, before jumping, make sure your luck supply is 100% full."],
+
+  msg_outro: ["Repair bot: Loading final message ...",
+              "    To end this training, get to the jump sight.",
+              "    Mining industries corp. reminds you that your guarantee is over,",
+              "    and you will have to pay for repair next time.",
+              "    Updated license transfer ...",
+              "    Updated license transefer complete",
+              "Communication over."],
 
   get_name: function(self) {
     return self.name;
@@ -124,6 +158,20 @@ Tutorial_Stage.prototype = {
 
       case self.show_greet_msg:
       if (self.display_message_delay(self, self.msg_greet)) {
+        self.state = self.wait_greet_msg;
+        self.set_delay(self, self.const_delay);
+      }
+      break;
+
+      case self.wait_greet_msg:
+      self.display_message(self, self.msg_greet);
+      if (self.get_delay(self)) {
+        self.state = self.show_controls_msg;
+      }
+      break;
+
+      case self.show_controls_msg:
+      if (self.display_message_delay(self, self.msg_control)) {
         self.state = self.show_left_controls;
         self.msg_greet.push("Press A");
         self.set_wait_keycode(self, 65); // a
@@ -135,7 +183,7 @@ Tutorial_Stage.prototype = {
       var player = gamelogic.player;
       var off = player.r*2;
       var l = 50;
-      self.display_message(self, self.msg_greet);
+      self.display_message(self, self.msg_control);
       gamescreen.put_arrow(gamescreen, "white", player.x-off, player.y, Math.PI, l, 1);
       gamescreen.put_text(gamescreen, "bold 20px Arial", "white", "A", player.x-off-l/2, player.y+30);
       if (self.get_wait_keycode_state(self)) {
@@ -147,7 +195,7 @@ Tutorial_Stage.prototype = {
       break;
 
       case self.show_controls_ok:
-      self.display_message(self, self.msg_greet);
+      self.display_message(self, self.msg_control);
       if (self.get_delay(self)) {
         self.msg_greet.pop();
         self.msg_greet.push("Press D");
@@ -160,7 +208,7 @@ Tutorial_Stage.prototype = {
       var player = gamelogic.player;
       var off = player.r*2;
       var l = 50;
-      self.display_message(self, self.msg_greet);
+      self.display_message(self, self.msg_control);
       gamescreen.put_arrow(gamescreen, "white", player.x+off, player.y, 0, l, 1);
       gamescreen.put_text(gamescreen, "bold 20px Arial", "white", "D", player.x+off+l/2-10, player.y+30);
       if (self.get_wait_keycode_state(self)) {
@@ -172,7 +220,7 @@ Tutorial_Stage.prototype = {
       break;
 
       case self.show_controls_ok2:
-      self.display_message(self, self.msg_greet);
+      self.display_message(self, self.msg_control);
       if (self.get_delay(self)) {
         self.msg_greet.pop();
         self.state = self.show_accel_controls;
@@ -199,7 +247,7 @@ Tutorial_Stage.prototype = {
 
       if (self.get_wait_keycode_state(self)) {
         self.msg_accel.pop();
-        self.msg_accel.push("OK, proceed to asteroid smashing program.");
+        self.msg_accel.push("OK, proceed to asteroid smashing course.");
         self.state = self.check_accel_ok;
         self.set_delay(self, self.const_delay);
       }
@@ -255,6 +303,34 @@ Tutorial_Stage.prototype = {
       self.display_message(self, self.msg_torpedo);
       if (self.get_delay(self)) {
         self.msg_torpedo.pop();
+        self.state = self.show_grip_msg;
+      }
+      break;
+
+      case self.show_grip_msg:
+      if (self.display_message_delay(self, self.msg_grip)) {
+        self.state = self.wait_grip_msg;
+        self.set_delay(self, self.const_delay);
+      }
+      break;
+
+      case self.wait_grip_msg:
+      self.display_message(self, self.msg_grip);
+      if (self.get_delay(self)) {
+        self.state = self.show_outro;
+      }
+      break;
+
+      case self.show_outro:
+      if (self.display_message_delay(self, self.msg_outro)) {
+        self.state = self.wait_outro;
+        self.set_delay(self, self.const_delay);
+      }
+      break;
+
+      case self.wait_outro:
+      self.display_message(self, self.msg_outro);
+      if (self.get_delay(self)) {
         self.state ++;
       }
       break;
