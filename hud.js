@@ -33,8 +33,16 @@ Hud.prototype = {
     self.luck_count-=0.1;
   },
 
+  add_luck: function(self, delta) {
+    self.luck_count += delta;
+  },
+
   inc_fuel: function(self) {
     self.fuel_count += 10;
+  },
+
+  add_fuel: function(self, delta) {
+    self.fuel_count += delta;
   },
 
   set_fuel_level: function(self, level) {

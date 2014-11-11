@@ -67,7 +67,7 @@ Asteroid.prototype = {
     return self.size;
   },
 
-  init: function(self, size) {
+  init: function(self, size, remainder_prob) {
     self.points = [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]];
     var r = 0;
     var angle_increment = Math.PI*2/self.points.length;

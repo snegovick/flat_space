@@ -6,11 +6,13 @@ Player.prototype = {
   x: 0,
   y: 0,
   r: 10,
+  grip_reach_dist: 0,
   torpedo: null,
   cur_speed_step: 0,
   speed_steps: [0,0,0,0,0],
   const_x_velocity: 0,
   pause: false,
+
 
   set_pause: function(self) {
     self.pause = true;
@@ -50,6 +52,7 @@ Player.prototype = {
 
   init: function(self) {
     self.const_x_velocity = gamescreen.height/30;
+    self.grip_reach_dist = 10*self.r;
   },
 
   move_left: function(self) {

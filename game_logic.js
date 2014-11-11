@@ -1,3 +1,80 @@
+function Remainder() {};
+
+Remainder.prototype = {
+  x: 0,
+  y: 0,
+  orientation: 0,
+  speed: 0,
+  r: 6,
+  luck: 0.3,
+  fuel: 30,
+
+  rtype: 0,
+  rtype_colors: ["#00E1FA", "#7DFA00"], //fuel, luck
+
+  so: 0,
+  co: 0,
+
+  speed_steps: [5, 10, 15, 20, 25],
+  speed_addition: 5,
+
+  pause: false,
+  
+  set_pause: function(self) {
+    self.pause = true;
+  },
+
+  unset_pause: function(self) {
+    self.pause = false;
+  },
+
+  set_speed_step: function(self, step) {
+    self.cur_speed_step = step;
+    if (self.cur_speed_step >= self.speed_steps.length) {
+      self.cur_speed_step = self.speed_steps.length - 1;
+    }
+    self.speed_addition = self.speed_steps[self.cur_speed_step];
+  },
+
+  set_normal_speed: function(self) {
+    self.cur_speed_step = 0;
+    self.speed_addition = self.speed_steps[0];
+  },
+
+  inc_speed: function(self) {
+    self.cur_speed_step ++;
+    if (self.cur_speed_step >= self.speed_steps.length) {
+      self.cur_speed_step = self.speed_steps.length - 1;
+    }
+    self.speed_addition = self.speed_steps[self.cur_speed_step];
+  },
+  
+  init: function(self, x, y, orientation, rtype, speed, so, co) {
+    self.x = x;
+    self.y = y;
+    if (rtype == 0) {
+      self.luck = 0;
+      self.fuel = Math.floor(Math.random()*self.fuel);
+    } else {
+      self.luck = Math.random()*self.luck;
+      self.fuel = 0;
+    }
+    self.orientation = orientation;
+    self.rtype = rtype;
+    self.speed = speed;
+    self.so = so || Math.sin(self.orientation);
+    self.co = co || Math.cos(self.orientation);
+  },
+
+  draw: function(self) {
+    if (! self.pause) {
+      self.x+=self.speed*self.co;
+      self.y+=self.speed_addition+self.speed*self.so;
+    }
+    gamescreen.put_rect(gamescreen, self.rtype_colors[self.rtype], 0, self.x, self.y, self.r, self.r);
+  }
+};
+
 function GameLogic() {};
 
 GameLogic.prototype = {
@@ -18,8 +95,83 @@ GameLogic.prototype = {
   active_asteroids: 0,
   natural_asteroids: 12,
   
+  remainders: [null, null, null, null, null, null, null, null, null, null, null, null,null, null, null, null, null, null, null, null, null, null, null, null],
+  const_remainder_prob: 0.5,
+  luck_prob: 0.1,
+  fuel_prob: 0.5,
+  remainder_prob: 0.5,
+  luck_prob: 0.1,
+  fuel_prob: 0.5,
+  
   pause: false,
   stage: null,
+
+  set_remainder_prob: function(self, prob) {
+    self.remainder_prob = prob;
+  },
+
+  set_fuel_prob: function(self, prob) {
+    self.fuel_prob = prob;
+  },
+
+  set_luck_prob: function(self, prob) {
+    self.luck_prob = prob;
+  },
+
+  reset_prob: function(self) {
+    self.luck_prob = self.const_luck_prob;
+    self.fuel_prob = self.const_fuel_prob;
+    self.remainder_prob = self.const_remainder_prob;
+  },
+
+  try_destroy_asteroid: function(self, asteroid) {
+    if (Math.random() < self.remainder_prob) { // have to leave remainders
+      console.log("leaving remainders");
+      var fuel_rem = Math.floor(Math.random()*10*self.fuel_prob*(asteroid.size/asteroid.const_max_r.length));
+      var ang = 0;
+      var dist = 0;
+      var so = 0;
+      var co = 0;
+      var rem = null;
+      var rem_lst = [];
+
+      if (Math.random()<self.luck_prob) {
+        ang = Math.random()*Math.PI*2+Math.PI;
+        dist = Math.random()*20;
+        so = Math.sin(ang);
+        co = Math.cos(ang);
+        rem = new Remainder();
+        rem.init(rem, asteroid.x+co*dist, asteroid.y+so*dist, ang, 1, asteroid.speed/5, so, co);
+        rem.set_speed_step(rem, self.speed_step);
+        rem_lst.push(rem);        
+      }
+
+      for (var i = 0; i < fuel_rem; i++) {
+        ang = Math.random()*Math.PI*2;
+        dist = Math.random()*20;
+        so = Math.sin(ang);
+        co = Math.cos(ang);
+        rem = new Remainder();
+        rem.init(rem, asteroid.x+co*dist, asteroid.y+so*dist, ang, 0, asteroid.speed/5, so, co);
+        rem.set_speed_step(rem, self.speed_step);
+        rem_lst.push(rem);
+      }
+      console.log("remainders list");
+      console.log(rem_lst);
+
+      for (var i = 0; i < self.remainders.length; i++) {
+        if (self.remainders[i] == null) {
+          if (rem_lst.length > 0) {
+            self.remainders[i] = rem_lst[0];
+            rem_lst.shift();
+          } else {
+            break;
+          }
+        }
+      }
+      console.log(self.remainders);
+    }
+  },
 
   set_generate_asteroids: function(self) {
     self.generate_asteroids = true;
@@ -276,8 +428,8 @@ GameLogic.prototype = {
               if (self.create_new_asteroid(self, false, x+r, y, 2, -Math.PI/2, speed)) {
                 self.active_asteroids ++;                
               }
-
             }
+            self.try_destroy_asteroid(self, self.asteroids[i]);
             self.active_asteroids --;
             self.asteroids[i] = null;
             break;
@@ -303,6 +455,26 @@ GameLogic.prototype = {
         } else {
           self.asteroids[i].draw(self.asteroids[i]);
           self.check_player_collision(self, self.player, self.asteroids[i]);
+        }
+      }
+    }
+
+//    console.log(self.remainders);
+    for (var i = 0; i < self.remainders.length; i++) {
+      var rem = self.remainders[i];
+      if (rem != null) {
+        if (! gamescreen.circle_in_screen(gamescreen, rem.x, rem.y, rem.r)) {
+          self.remainders[i] = null;
+        } else {
+          rem.draw(rem);
+          var dist = pt_to_pt_dist([self.player.x, self.player.y], [rem.x, rem.y]);
+          console.log("dist");
+          console.log(dist);
+          if (dist<self.player.grip_reach_dist) {
+            hud.add_luck(hud, rem.luck);
+            hud.add_fuel(hud, rem.fuel);
+            self.remainders[i] = null;
+          }
         }
       }
     }

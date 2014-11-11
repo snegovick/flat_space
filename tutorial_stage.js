@@ -11,6 +11,11 @@ Tutorial_Stage.prototype = {
   show_accel_controls: 6,
   check_accel: 7,
   check_accel_ok: 8,
+  show_mining_intro: 9,
+  wait_mining_intro: 10,
+  show_torpedo_controls: 11,
+  check_torpedo_launch: 12,
+  wait_grip: 13,
   state: 0,
   
   delay_ctr: 0,
@@ -31,6 +36,14 @@ Tutorial_Stage.prototype = {
   msg_accel: ["Repair bot: Also, the vessel now has 5-step acceleration engine",
              "    Every step takes 100 units of fuel to accelerate.",
              "    You have some fuel to try."],
+
+  msg_mining: ["Repair bot: As a part of refurbishment and update program,",
+               "    the mining gun was replaced with mining torpedo.",
+               "    It is a little bit smarter than a usual gun,",
+               "    but dont count too much on that"],
+
+  msg_torpedo: ["Repair bot: I will put an average asteroid on your course.",
+               "    Use your torpedo to destroy it."],
 
   get_name: function(self) {
     return self.name;
@@ -186,7 +199,7 @@ Tutorial_Stage.prototype = {
 
       if (self.get_wait_keycode_state(self)) {
         self.msg_accel.pop();
-        self.msg_accel.push("OK, proceed to shooting program.");
+        self.msg_accel.push("OK, proceed to asteroid smashing program.");
         self.state = self.check_accel_ok;
         self.set_delay(self, self.const_delay);
       }
@@ -195,7 +208,53 @@ Tutorial_Stage.prototype = {
       case self.check_accel_ok:
       self.display_message(self, self.msg_accel);
       if (self.get_delay(self)) {
+        gamelogic.set_normal_speed(gamelogic);
         self.msg_accel.pop();
+        self.state = self.show_mining_intro;
+      }
+      break;
+
+      case self.show_mining_intro:
+      if (self.display_message_delay(self, self.msg_mining)) {
+        self.state = self.wait_mining_intro;
+        self.set_delay(self, self.const_delay);
+      }
+      break;
+
+      case self.wait_mining_intro:
+      self.display_message(self, self.msg_mining);
+      if (self.get_delay(self)) {
+        self.state = self.show_torpedo_controls;
+      }
+      break;
+      
+      case self.show_torpedo_controls:
+      if (self.display_message_delay(self, self.msg_torpedo)) {
+        var player = gamelogic.player;
+        var off = player.r*2;
+        self.state = self.check_torpedo_launch;
+        gamelogic.set_remainder_prob(gamelogic, 1);
+        gamelogic.set_luck_prob(gamelogic, 1);
+        gamelogic.create_new_asteroid(gamelogic, false, player.x, player.y-gamescreen.height/5, 2, Math.PI/2, -5);
+        self.msg_torpedo.push("Press SPACE");
+        self.set_wait_keycode(self, 32); // space
+      }
+      break;
+
+      case self.check_torpedo_launch:
+      self.display_message(self, self.msg_torpedo);
+      if (self.get_wait_keycode_state(self)) {
+        self.msg_torpedo.pop();
+        self.msg_torpedo.push("OK, now collect remainders.");
+        self.state = self.wait_grip;
+        self.set_delay(self, self.const_delay);
+      }
+      break;
+
+      case self.wait_grip:
+      self.display_message(self, self.msg_torpedo);
+      if (self.get_delay(self)) {
+        self.msg_torpedo.pop();
         self.state ++;
       }
       break;
