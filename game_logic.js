@@ -102,9 +102,30 @@ GameLogic.prototype = {
   remainder_prob: 0.5,
   luck_prob: 0.1,
   fuel_prob: 0.5,
+
+  objects: [null, null, null, null, null, null, null, null, null, null, null, null,null, null, null, null, null, null, null, null, null, null, null, null],
+  active_objects: 0,
   
   pause: false,
   stage: null,
+
+  add_object: function(self, object) {
+    for (var i = 0; i < self.objects.length; i++) {
+      if (self.objects[i] == null) {
+        self.objects[i] = object;
+        self.active_objects++;
+        return i;
+      }
+    }
+    return -1;
+  },
+
+  del_object: function(self, handle) {
+    if (self.objects[handle] != null) {
+      self.objects[handle] = null;
+      self.active_objects--;
+    }
+  },
 
   set_remainder_prob: function(self, prob) {
     self.remainder_prob = prob;
@@ -208,8 +229,8 @@ GameLogic.prototype = {
   },
 
   keydown: function(self, event) {
-    // console.log("down");
-    // console.log(event);
+    //console.log("down");
+    //console.log(event);
     if (event.keyCode == 16) { // shift
       if (hud.dec_fuel(hud)) {
         self.speed_step ++;
@@ -468,13 +489,26 @@ GameLogic.prototype = {
         } else {
           rem.draw(rem);
           var dist = pt_to_pt_dist([self.player.x, self.player.y], [rem.x, rem.y]);
-          console.log("dist");
-          console.log(dist);
           if (dist<self.player.grip_reach_dist) {
             hud.add_luck(hud, rem.luck);
             hud.add_fuel(hud, rem.fuel);
             self.remainders[i] = null;
           }
+        }
+      }
+    }
+
+    //console.log(self.objects);
+    var obj_cnt = 0;
+    if (self.active_objects>0) {
+      for (var i = 0; i < self.objects.length; i++) {
+        var obj = self.objects[i];
+        if (obj != null) {
+          obj.draw(obj);
+          obj_cnt ++;
+        }
+        if (obj_cnt >= self.active_objects) {
+          break;
         }
       }
     }

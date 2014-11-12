@@ -32,3 +32,5 @@ function put_rect(ctx, style, orientation, x, y, w, h) {
   }
   ctx.translate(-x, -y);
 }
+
+var ch_s = 83;

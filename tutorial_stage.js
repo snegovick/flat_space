@@ -86,6 +86,9 @@ Tutorial_Stage.prototype = {
                  "    Anti-asteroid weapons disabled.",
                  "    Proceed to jumpgate"],
 
+  torpedo_launchers: [null, null, null],
+  tl_handlers: [0,0,0],
+
   get_name: function(self) {
     return self.name;
   },
@@ -158,12 +161,17 @@ Tutorial_Stage.prototype = {
     switch (self.state) {
     case self.stop_after_st_dis:
       if (progress.is_stage_display_done(progress)) {
+        self.set_wait_keycode(self, ch_s);
         //gamelogic.set_pause(gamelogic);
         self.state = self.show_greet_msg;
       }
       break;
 
     case self.show_greet_msg:
+      if (self.get_wait_keycode_state(self)) {
+        self.state = self.show_outro;
+        break;
+      }
       if (self.display_message_delay(self, self.msg_greet)) {
         self.state = self.wait_greet_msg;
         self.set_delay(self, self.const_delay);
@@ -348,6 +356,13 @@ Tutorial_Stage.prototype = {
     case self.wait_checkpoint:
       if (progress.get_progress(progress)>self.checkpoint_progress) {
         self.state = self.show_jumpgate_msg;
+        for (var i = 0; i < self.torpedo_launchers.length; i++) {
+          console.log("creating turret");
+          var t = new AATurret();
+          t.init(t, gamescreen.width/2, 100, 0);
+          self.torpedo_launchers[i] = t;
+          self.tl_handlers[i] = gamelogic.add_object(gamelogic, t);
+        }
       }
       break;
 

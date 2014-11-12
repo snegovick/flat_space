@@ -57,7 +57,7 @@ Torpedo.prototype = {
       if (asteroids[i]!=null) {
         if (Math.abs(self.x - asteroids[i].x) < gamescreen.width/5) {
           var dy = self.y - asteroids[i].y;
-          console.log("dy:"+dy+" min_dy:"+min_dy);
+          //console.log("dy:"+dy+" min_dy:"+min_dy);
           if (dy > 0) {
             if (dy < min_dy) {
               min_dy = dy;
