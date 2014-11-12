@@ -22,9 +22,12 @@ Tutorial_Stage.prototype = {
   wait_grip_msg: 17,
   show_outro: 18,
   wait_outro: 19,
-  wait_checkpoint: 20,
-  show_jumpgate_msg: 21,
+  wait_turret_place: 20,
+  wait_checkpoint: 21,
+  show_jumpgate_msg: 22,
+  wait_jumpgate_msg: 23,
 
+  turret_progress: 700,
   checkpoint_progress: 900,
 
   state: 0,
@@ -83,7 +86,6 @@ Tutorial_Stage.prototype = {
               "Communication over."],
 
   msg_jumpgate: ["Jumpgate anti-asteroid protection system: Mining vessel identified", 
-                 "    Anti-asteroid weapons disabled.",
                  "    Proceed to jumpgate"],
 
   torpedo_launchers: [null, null, null],
@@ -346,30 +348,48 @@ Tutorial_Stage.prototype = {
     case self.wait_outro:
       self.display_message(self, self.msg_outro);
       if (self.get_delay(self)) {
-        self.state = self.wait_checkpoint;
+        self.state = self.wait_turret_place;
         progress.set_count_progress(progress);
         progress.set_display_progress(progress);
         gamelogic.set_generate_asteroids(gamelogic);
       }
       break;
 
-    case self.wait_checkpoint:
-      if (progress.get_progress(progress)>self.checkpoint_progress) {
-        self.state = self.show_jumpgate_msg;
+    case self.wait_turret_place:
+      if (progress.get_progress(progress)>self.turret_progress) {
+        self.state = self.wait_checkpoint;
+        var x_pos = gamescreen.width/4;
         for (var i = 0; i < self.torpedo_launchers.length; i++) {
           console.log("creating turret");
           var t = new AATurret();
-          t.init(t, gamescreen.width/2, 100, 0);
+          t.init(t, x_pos, -100, -Math.PI/2);
+          x_pos+=gamescreen.width/4;
           self.torpedo_launchers[i] = t;
           self.tl_handlers[i] = gamelogic.add_object(gamelogic, t);
         }
       }
       break;
 
+    case self.wait_checkpoint:
+      if (progress.get_progress(progress)>self.checkpoint_progress) {
+        gamelogic.unset_generate_asteroids(gamelogic);
+        self.state = self.show_jumpgate_msg;
+      }
+      break;
+
     case self.show_jumpgate_msg:
       if (self.display_message_delay(self, self.msg_jumpgate)) {
+        self.set_delay(self, self.const_delay);
+        self.state = self.waut_jumpgate_msg;
+      }
+      break;
+
+    case self.wait_jumpgate_msg:
+      self.display_message(self, self.msg_jumpgate);
+      if (self.get_delay(self)) {
         self.state ++;
       }
+
       break;
       
     default: 

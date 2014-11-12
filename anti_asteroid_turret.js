@@ -7,7 +7,7 @@ AATurret.prototype = {
   y: 0,
   orientation: 0,
   r: 30,
-  torpedo: null,
+  torpedos: null,
   cur_speed_step: 0,
   speed_steps: [5,10,15,20,25],
   rel_speed: 5,
@@ -16,7 +16,7 @@ AATurret.prototype = {
   points: [[0,0], [0,0], [0,0], [0,0], [0,0], [0,0]],
 
   launch_ctr: 0,
-  const_launch_ctr: 10,
+  const_launch_ctr: 90,
 
   set_pause: function(self) {
     self.pause = true;
@@ -31,16 +31,23 @@ AATurret.prototype = {
     if (self.cur_speed_step >= self.speed_steps.length) {
       self.cur_speed_step = self.speed_steps.length - 1;
     }
-    if (self.torpedo!=null) {
-      self.torpedo.set_speed_step(self.torpedo, step);
+    for (var i = 0; i < self.torpedos.length; i++) {
+      var t = self.torpedos[i];
+      if (t!=null) {
+        t.set_speed_step(t, step);
+      }
     }
     self.rel_speed = self.speed_steps[self.cur_speed_step];
   },
 
   set_normal_speed: function(self) {
     self.cur_speed_step = 0;
-    if (self.torpedo!=null) {
-      self.torpedo.set_normal_speed(self.torpedo);
+
+    for (var i = 0; i < self.torpedos.length; i++) {
+      var t = self.torpedos[i];
+      if (t!=null) {
+        t.set_normal_speed(t);
+      }
     }
     self.rel_speed = self.speed_steps[self.cur_speed_step];
   },
@@ -50,13 +57,17 @@ AATurret.prototype = {
     if (self.cur_speed_step >= self.speed_steps.length) {
       self.cur_speed_step = self.speed_steps.length - 1;
     }
-    if (self.torpedo!=null) {
-      self.torpedo.inc_speed(self.torpedo);
+    for (var i = 0; i < self.torpedos.length; i++) {
+      var t = self.torpedos[i];
+      if (t!=null) {
+        t.inc_speed(t);
+      }
     }
     self.rel_speed = self.speed_steps[self.cur_speed_step];
   },
 
   init: function(self, x_pos, y_pos, orientation) {
+    self.torpedos = [null, null, null, null];
     self.x = x_pos;
     self.y = y_pos;
     self.orientation = orientation;
@@ -78,15 +89,21 @@ AATurret.prototype = {
   },
 
   launch_torpedo: function(self, asteroids) {
-    if (self.torpedo == null) {
-      self.torpedo = new Torpedo();
-      self.torpedo.init(self.torpedo, self.x, self.y-self.r, asteroids, self.orientation, 0.5);
-      self.torpedo.set_speed_step(self.torpedo, self.cur_speed_step);
+    for (var i = 0; i < self.torpedos.length; i++) {
+      if (self.torpedos[i]==null) {
+        self.torpedos[i] = new Torpedo();
+        if (!self.torpedos[i].init(self.torpedos[i], self.x, self.y-self.r, asteroids, self.orientation, 0.3)) {
+          self.torpedos[i] = null;
+        } else {
+          self.torpedos[i].set_speed_step(self.torpedos[i], self.cur_speed_step);
+        }
+        break;
+      }
     }
   },
 
-  get_torpedo: function(self) {
-    return self.torpedo;
+  get_torpedos: function(self) {
+    return self.torpedos;
   },
 
   draw: function(self) {
@@ -99,11 +116,13 @@ AATurret.prototype = {
       self.launch_ctr++;
     }
     gamescreen.put_multi_line(gamescreen, "white", self.x, self.y, self.orientation, self.points, 2);
-    if (self.torpedo != null) {
-      if (self.torpedo.is_dead(self.torpedo)) {
-        self.torpedo = null;
-      } else {
-        self.torpedo.draw(self.torpedo);
+    for (var i = 0; i < self.torpedos.length; i++) {
+      if (self.torpedos[i]!=null) { 
+        if (self.torpedos[i].is_dead(self.torpedos[i])) {
+          self.torpedos[i] = null;
+        } else {
+          self.torpedos[i].draw(self.torpedos[i]);
+        }
       }
     }
   }

@@ -91,9 +91,11 @@ GameLogic.prototype = {
   speed_step: 0,
 
   generate_asteroids: false,
-  asteroids: [null, null, null, null, null, null, null, null, null, null, null, null,null, null, null, null, null, null, null, null, null, null, null, null],
+  asteroids: [null, null, null, null, null, null, null, null, null, null,
+              null, null, null, null, null, null, null, null, null, null,
+              null, null, null, null],
   active_asteroids: 0,
-  natural_asteroids: 12,
+  natural_asteroids: 18,
   
   remainders: [null, null, null, null, null, null, null, null, null, null, null, null,null, null, null, null, null, null, null, null, null, null, null, null],
   const_remainder_prob: 0.5,
@@ -112,6 +114,7 @@ GameLogic.prototype = {
   add_object: function(self, object) {
     for (var i = 0; i < self.objects.length; i++) {
       if (self.objects[i] == null) {
+        object.set_speed_step(object, self.speed_step);
         self.objects[i] = object;
         self.active_objects++;
         return i;
@@ -429,31 +432,57 @@ GameLogic.prototype = {
         }
       }
     }
-    var torpedo = self.player.get_torpedo(self.player);
-    if (torpedo != null) {
-      for (var i = 0; i < self.asteroids.length; i++) {
-        if (self.asteroids[i] != null) {     
-          if (self.check_torpedo_collision(self, torpedo, self.asteroids[i])) {
-            torpedo.draw(torpedo);
-            torpedo.explode(torpedo);
-            var sz = self.asteroids[i].get_size(self.asteroids[i]);
-            if (sz > 3) {
-              hud.inc_fuel(hud);
-              var x = self.asteroids[i].x;
-              var y = self.asteroids[i].y;
-              var r = self.asteroids[i].const_max_ast_r;
-              var speed = self.asteroids[i].speed;
-              if (self.create_new_asteroid(self, false, x-r, y, 2, Math.PI/2, speed)) {
-                self.active_asteroids ++;
-              }
-              if (self.create_new_asteroid(self, false, x+r, y, 2, -Math.PI/2, speed)) {
-                self.active_asteroids ++;                
-              }
+    var torpedos = [self.player.get_torpedo(self.player)];
+    var obj_cnt = 0;
+    if (self.active_objects>0) {
+      for (var i = 0; i < self.objects.length; i++) {
+        var obj = self.objects[i];
+        if (obj != null) {
+          obj.draw(obj);
+          obj_cnt ++;
+
+          var obj_torpedos = obj.get_torpedos(obj);
+          for (var j = 0; j < obj_torpedos.length; j++) {
+            if (obj_torpedos[j] != null) {
+              torpedos.push(obj_torpedos[j]);
             }
-            self.try_destroy_asteroid(self, self.asteroids[i]);
-            self.active_asteroids --;
-            self.asteroids[i] = null;
-            break;
+          }
+
+        }
+        if (obj_cnt >= self.active_objects) {
+          break;
+        }
+      }
+    }
+
+
+    for (var j = 0; j < torpedos.length; j++) {
+      var torpedo = torpedos[j];
+      if (torpedo != null) {
+        for (var i = 0; i < self.asteroids.length; i++) {
+          if (self.asteroids[i] != null) {     
+            if (self.check_torpedo_collision(self, torpedo, self.asteroids[i])) {
+              torpedo.draw(torpedo);
+              torpedo.explode(torpedo);
+              var sz = self.asteroids[i].get_size(self.asteroids[i]);
+              if (sz > 3) {
+                hud.inc_fuel(hud);
+                var x = self.asteroids[i].x;
+                var y = self.asteroids[i].y;
+                var r = self.asteroids[i].const_max_ast_r;
+                var speed = self.asteroids[i].speed;
+                if (self.create_new_asteroid(self, false, x-r, y, 2, Math.PI/2, speed)) {
+                  self.active_asteroids ++;
+                }
+                if (self.create_new_asteroid(self, false, x+r, y, 2, -Math.PI/2, speed)) {
+                  self.active_asteroids ++;                
+                }
+              }
+              self.try_destroy_asteroid(self, self.asteroids[i]);
+              self.active_asteroids --;
+              self.asteroids[i] = null;
+              break;
+            }
           }
         }
       }
@@ -499,19 +528,6 @@ GameLogic.prototype = {
     }
 
     //console.log(self.objects);
-    var obj_cnt = 0;
-    if (self.active_objects>0) {
-      for (var i = 0; i < self.objects.length; i++) {
-        var obj = self.objects[i];
-        if (obj != null) {
-          obj.draw(obj);
-          obj_cnt ++;
-        }
-        if (obj_cnt >= self.active_objects) {
-          break;
-        }
-      }
-    }
 
     if (self.left) {
       self.player.move_left(self.player);
