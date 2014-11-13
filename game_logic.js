@@ -111,6 +111,10 @@ GameLogic.prototype = {
   pause: false,
   stage: null,
 
+  jump: function(self) {
+    self.background.set_jump(self.background);
+  },
+
   add_object: function(self, object) {
     for (var i = 0; i < self.objects.length; i++) {
       if (self.objects[i] == null) {
@@ -248,7 +252,8 @@ GameLogic.prototype = {
       }
     }
     if (event.keyCode == 32) { // space
-      self.player.launch_torpedo(self.player, self.asteroids);
+      //self.player.launch_torpedo(self.player, self.asteroids);
+      self.jump(self);
     }
     if (event.keyCode == 65) { // a
       self.left = true;

@@ -15,6 +15,21 @@ Background.prototype = {
   layer1_xoffset: 0,
   pause: false,
 
+  jump: false,
+  jump_anim_ctr: 0,
+  const_jump_start_ctr: 240,
+  const_b_max: 0.2,
+
+  set_jump: function(self) {
+    self.jump = true;
+    self.jump_start_ctr = 0;
+  },
+
+  unset_jump: function(self) {
+    self.jump = false;
+    self.jump_anim_ctr = 0;
+  },
+
   set_pause: function(self) {
     self.pause = true;
   },
@@ -48,23 +63,11 @@ Background.prototype = {
     self.cur_speed_step = 0;
   },
 
-  draw: function(self) {
-    if (! self.pause) {
-      self.start_counter1 += self.current_increment;
-      self.start_counter1 %= self.layer1.length;
-      self.frame_counter1 = 0;
-      self.start_counter2 += self.current_increment;
-      self.start_counter2 %= self.layer2.length;
-      self.frame_counter2 = 0;
-      
-      self.frame_counter1++;
-      self.frame_counter2++;
-    }
-
+  draw_normal: function(self) {
     var y = gamescreen.height;
     for (var i = self.start_counter2; i < self.layer2.length; i++) {
       if (self.layer2[i] != 0) {
-        gamescreen.put_rect(gamescreen, self.const_layer2_color, 0, self.layer2[i], y, self.size2, self.size2);
+          gamescreen.put_rect(gamescreen, self.const_layer2_color, 0, self.layer2[i], y, self.size2, self.size2);
       }
       y-=gamescreen.height/self.layer2.length;
     }
@@ -88,8 +91,77 @@ Background.prototype = {
       }
       y-=gamescreen.height/self.layer1.length;
     }
+  },
 
+  draw_jump: function(self) {
+    var l2_xsz = self.size2;
+    var l1_xsz = self.size1;
+    var l2_ysz = self.size2;
+    var l1_ysz = self.size1;
+    var w_2 = gamescreen.width/2;
+    var b = 2*w_2*self.const_b_max;
+    var k = (w_2 - b)/w_2;
 
+    if (self.jump_anim_ctr < self.const_jump_start_ctr) {
+      
+      b = b * self.jump_anim_ctr/self.const_jump_start_ctr;
+      k = (w_2 - b)/w_2;
+      self.jump_anim_ctr ++;
+      console.log("jump anim:"+self.jump_anim_ctr+" b:"+b, " k:"+k);
+    }
+   
+
+    var y = gamescreen.height;
+    for (var i = self.start_counter2; i < self.layer2.length; i++) {
+      if (self.layer2[i] != 0) {
+        var x = self.layer2[i];
+        gamescreen.put_rect(gamescreen, self.const_layer2_color, 0, ( x > w_2 ? (k*(x-w_2)+b)+w_2 : (k*(x-w_2)-b)+w_2), y, l2_xsz, l2_ysz);
+      }
+      y-=gamescreen.height/self.layer2.length;
+    }
+    for (var i = 0; i < self.start_counter2; i++) {
+      if (self.layer2[i] != 0) {
+        var x = self.layer2[i];
+        gamescreen.put_rect(gamescreen, self.const_layer2_color, 0, ( x > w_2 ? (k*(x-w_2)+b)+w_2 : (k*(x-w_2)-b)+w_2), y, l2_xsz, l2_ysz);
+      }
+      y-=gamescreen.height/self.layer2.length;
+    }
+
+    y = gamescreen.height;
+    for (var i = self.start_counter1; i < self.layer1.length; i++) {
+      if (self.layer1[i] != 0) {
+        var x = self.layer1[i];
+        gamescreen.put_rect(gamescreen, self.const_layer1_color, 0, ( x > w_2 ? (k*(x-w_2)+b)+w_2 : (k*(x-w_2)-b)+w_2), y, l1_xsz, l1_ysz);
+      }
+      y-=gamescreen.height/self.layer1.length;
+    }
+    for (var i = 0; i < self.start_counter1; i++) {
+      if (self.layer1[i] != 0) {
+        var x = self.layer1[i];
+        gamescreen.put_rect(gamescreen, self.const_layer1_color, 0, ( x > w_2 ? (k*(x-w_2)+b)+w_2 : (k*(x-w_2)-b)+w_2), y, l1_xsz, l1_ysz);
+      }
+      y-=gamescreen.height/self.layer1.length;
+    }
+  },
+
+  draw: function(self) {
+    if (! self.pause) {
+      self.start_counter1 += self.current_increment;
+      self.start_counter1 %= self.layer1.length;
+      self.frame_counter1 = 0;
+      self.start_counter2 += self.current_increment;
+      self.start_counter2 %= self.layer2.length;
+      self.frame_counter2 = 0;
+      
+      self.frame_counter1++;
+      self.frame_counter2++;
+    }
+
+    if (self.jump) {
+      self.draw_jump(self);
+    } else {
+      self.draw_normal(self);
+    }
 
   },
   init: function(self) {
