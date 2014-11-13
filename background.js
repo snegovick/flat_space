@@ -11,7 +11,12 @@ Background.prototype = {
   const_layer2_color: "#777777",
   speed_steps: [1, 2, 3, 4, 5],
   cur_speed_step: 0,
-  current_increment: 1,
+  const_normal_inc1: 1,
+  const_normal_inc2: 1,
+  const_max_inc1: 5,
+  const_max_inc2: 5,
+  current_increment1: 1,
+  current_increment2: 1,
   layer1_xoffset: 0,
   pause: false,
 
@@ -94,17 +99,20 @@ Background.prototype = {
   },
 
   draw_jump: function(self) {
+    var c = self.jump_anim_ctr/self.const_jump_start_ctr;
+    self.current_increment1 = Math.floor(c*self.const_max_inc1);
+    self.current_increment2 = Math.floor(2*c*self.const_max_inc2);
     var l2_xsz = self.size2;
     var l1_xsz = self.size1;
-    var l2_ysz = self.size2;
-    var l1_ysz = self.size1;
+    var l2_ysz = self.size2*15*c;
+    var l1_ysz = self.size1*10*c;
     var w_2 = gamescreen.width/2;
     var b = 2*w_2*self.const_b_max;
     var k = (w_2 - b)/w_2;
 
     if (self.jump_anim_ctr < self.const_jump_start_ctr) {
       
-      b = b * self.jump_anim_ctr/self.const_jump_start_ctr;
+      b = b * c;
       k = (w_2 - b)/w_2;
       self.jump_anim_ctr ++;
       console.log("jump anim:"+self.jump_anim_ctr+" b:"+b, " k:"+k);
@@ -146,15 +154,10 @@ Background.prototype = {
 
   draw: function(self) {
     if (! self.pause) {
-      self.start_counter1 += self.current_increment;
+      self.start_counter1 += self.current_increment1;
       self.start_counter1 %= self.layer1.length;
-      self.frame_counter1 = 0;
-      self.start_counter2 += self.current_increment;
+      self.start_counter2 += self.current_increment2;
       self.start_counter2 %= self.layer2.length;
-      self.frame_counter2 = 0;
-      
-      self.frame_counter1++;
-      self.frame_counter2++;
     }
 
     if (self.jump) {
