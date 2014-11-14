@@ -113,6 +113,7 @@ GameLogic.prototype = {
 
   jump: function(self) {
     self.background.set_jump(self.background);
+    self.player.set_jump(self.player);
   },
 
   add_object: function(self, object) {

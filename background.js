@@ -100,8 +100,8 @@ Background.prototype = {
 
   draw_jump: function(self) {
     var c = self.jump_anim_ctr/self.const_jump_start_ctr;
-    self.current_increment1 = Math.floor(c*self.const_max_inc1);
-    self.current_increment2 = Math.floor(2*c*self.const_max_inc2);
+    self.current_increment1 = Math.floor(2*c*self.const_max_inc1+1);
+    self.current_increment2 = Math.floor(2*c*self.const_max_inc2+1);
     var l2_xsz = self.size2;
     var l1_xsz = self.size1;
     var l2_ysz = self.size2*15*c;
