@@ -32,8 +32,7 @@ Tutorial_Stage.prototype = {
   jump_ctr: 0,
   jump_ctr_max: 1000,
 
-  turret_progress: 700,
-  checkpoint_progress: 900,
+  turret_progress: 300,
 
   state: 0,
   
@@ -223,12 +222,14 @@ Tutorial_Stage.prototype = {
         self.state = self.wait_turret_place;
         progress.set_count_progress(progress);
         progress.set_display_progress(progress);
+        hud.set_display(hud);
         gamelogic.set_generate_asteroids(gamelogic);
       }
       break;
 
     case self.wait_turret_place:
-      if (progress.get_progress(progress)>self.turret_progress) {
+      if (hud.get_fuel(hud)>self.turret_progress) {
+        self.set_delay(self, self.const_delay);
         self.state = self.wait_checkpoint;
         var x_pos = gamescreen.width/4;
         for (var i = 0; i < self.torpedo_launchers.length; i++) {
@@ -243,7 +244,7 @@ Tutorial_Stage.prototype = {
       break;
 
     case self.wait_checkpoint:
-      if (progress.get_progress(progress)>self.checkpoint_progress) {
+      if (self.get_delay(self)) {
         gamelogic.unset_generate_asteroids(gamelogic);
         self.state = self.show_jumpgate_msg;
       }

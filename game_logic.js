@@ -432,6 +432,13 @@ GameLogic.prototype = {
   gen_asteroids: function(self) {
     if (!self.pause && self.generate_asteroids) {
       if (self.next_ast_ctr <= 0) {
+        // var ast = 0;
+        // for (var i = 0; i < self.asteroids.length; i++) {
+        //   if (self.asteroids[i] != null) {
+        //     ast ++;
+        //   }
+        // }
+        // self.active_asteroids = ast;
         //console.log(self.asteroids);
         if (self.active_asteroids < self.natural_asteroids) {
           for (var i = 0; i < self.asteroids.length; i++) {
@@ -550,6 +557,7 @@ GameLogic.prototype = {
         if (self.asteroids[i] != null) {
           n_ast++;
           if (! gamescreen.circle_in_screen(gamescreen, self.asteroids[i].x, self.asteroids[i].y, self.asteroids[i].const_max_ast_r)) {
+            self.asteroids[i].draw(self.asteroids[i]);
             if (self.asteroids[i].check_ttl(self.asteroids[i])<0) {
               self.asteroids[i] = null;
               self.active_asteroids --;

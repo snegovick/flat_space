@@ -41,6 +41,10 @@ Hud.prototype = {
     self.luck_count += delta;
   },
 
+  get_fuel: function(self) {
+    return self.fuel_count;
+  },
+
   inc_fuel: function(self) {
     self.fuel_count += 10;
   },
