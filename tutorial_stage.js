@@ -269,6 +269,9 @@ Tutorial_Stage.prototype = {
       self.jump_ctr = (1-hud.get_luck(hud))*self.jump_ctr_max;
       console.log("jump ctr:"+self.jump_ctr);
       self.state = self.wait_jump;
+      progress.unset_count_progress(progress);
+      progress.unset_display_progress(progress);
+
       break;
 
     case self.wait_jump:

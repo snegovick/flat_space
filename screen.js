@@ -14,8 +14,11 @@ GameScreen.prototype = {
     self.canvas = document.getElementById("canvas");
     var min_dim = Math.min(window.innerWidth, window.innerHeight);
     console.log("min_dim:", min_dim);
-    self.canvas.width = min_dim;
-    self.canvas.height = min_dim;
+    self.canvas.height = window.innerHeight;
+    self.canvas.width = window.innerWidth;
+    //self.canvas.width = self.canvas.height*9/16;
+    // self.canvas.width = 720;
+    // self.canvas.height = 1280;
     self.width = self.canvas.width;
     self.height = self.canvas.height;
     self.ctx = self.canvas.getContext("2d");

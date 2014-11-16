@@ -531,7 +531,8 @@ GameLogic.prototype = {
                 self.try_destroy_asteroid(self, self.asteroids[i]);
                 self.active_asteroids --;
                 self.asteroids[i] = null;
-                break;
+                n_ast --;
+                //break;
               }
             }
             if (n_ast >= self.active_asteroids) {
