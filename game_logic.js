@@ -359,12 +359,6 @@ GameLogic.prototype = {
         nast.y = y;
         nast.calc_trig(nast, orientation); 
         nast.set_speed_step(nast, self.speed_step);
-        //console.log(set_random);
-        //console.log(x);
-        //console.log(y);
-        //console.log(orientation);
-        //console.log(size);
-        //console.log(nast);
       }
       self.asteroids[idx] = nast;
       self.active_asteroids ++;
@@ -383,9 +377,6 @@ GameLogic.prototype = {
 
   check_torpedo_collision: function(self, torpedo, asteroid) {
     if (pt_to_pt_dist([torpedo.x, torpedo.y], [asteroid.x, asteroid.y])<(asteroid.const_max_ast_r)) {
-    // var tr = mk_rect(torpedo.x, torpedo.y, torpedo.px, torpedo.py);
-    // var ta = mk_rect(asteroid.x, asteroid.y, asteroid.px, asteroid.py);
-    // if (rect_intersect(tr, ta)) {
       console.log("torpedo collision");
       return true;
     }
@@ -608,15 +599,11 @@ GameLogic.prototype = {
     self.ast_pla_col(self);
     self.rem_draw(self);
 
-    //console.log(self.objects);
-
     if (self.left) {
       self.player.move_left(self.player);
-      //self.background.set_x_offset(self.background, 200*(self.player.x/(gamescreen.width/2)-1));
     }
     if (self.right) {
       self.player.move_right(self.player);
-      //self.background.set_x_offset(self.background, 200*(self.player.x/(gamescreen.width/2)-1));
     }
 
     if (self.jump) {
