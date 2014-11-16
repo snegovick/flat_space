@@ -3,6 +3,8 @@ function Torpedo() {};
 Torpedo.prototype = {
   x: 0, // own coords
   y: 0,
+  px: 0,
+  py: 0,
   sx: 0,
   sy: 0,
   velocity: 10,
@@ -10,9 +12,9 @@ Torpedo.prototype = {
   ttl: 10,
   dead: false,
   exploded: false,
-  r: 5,
+  r: 10,
   name: "Anti-asteroid torpedo",
-  const_max_ang_vel: 0.3,
+  const_max_ang_vel: 0.03,
   tx: 0, //target coords
   ty: 0,
   trail: null,
@@ -58,7 +60,7 @@ Torpedo.prototype = {
         if (Math.abs(self.x - asteroids[i].x) < gamescreen.width/5) {
           var dy = self.y - asteroids[i].y;
           //console.log("dy:"+dy+" min_dy:"+min_dy);
-          if (dy > 0) {
+          if (dy > gamescreen.height/10) {
             if (dy < min_dy) {
               min_dy = dy;
               idx = i;
@@ -123,6 +125,8 @@ Torpedo.prototype = {
         self.dead = true;
       }
     }
+    self.px = self.x;
+    self.py = self.y;
     self.y += Math.sin(self.orientation)*self.velocity;
     self.x += Math.cos(self.orientation)*self.velocity;
     gamescreen.put_triangle(gamescreen, "white", self.orientation+Math.PI/2, 1, self.x, self.y+self.y_addition, -3, 3, 0, -6, 3, 3);

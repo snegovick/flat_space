@@ -5,6 +5,8 @@ Player.prototype = {
   vy: 0,
   x: 0,
   y: 0,
+  px: 0,
+  py: 0,
   r: 10,
   top: 20,
   bottom: 10,
@@ -156,6 +158,8 @@ Player.prototype = {
 
   draw: function(self) {
     if (! self.pause) {
+      self.px = self.x;
+      self.py = self.y;
       self.x = self.vx + gamescreen.width/2;
       self.y = self.vy + 4*gamescreen.height/5;
     }

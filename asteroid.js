@@ -18,6 +18,8 @@ Asteroid.prototype = {
   ttl: 20,
   x: 0,
   y: 0,
+  px: 0,
+  py: 0,
   highlight: false,
   speed_steps: [5, 10, 15, 20, 40],
   speed_addition: 5,
@@ -101,6 +103,8 @@ Asteroid.prototype = {
   draw: function(self) {
     if (! self.pause) {
       self.ttl --;
+      self.px = self.x;
+      self.py = self.y;
       self.x+=self.speed*self.co;
       self.y+=self.speed_addition+self.speed*self.so;
       self.orientation+=self.angular_velocity;
