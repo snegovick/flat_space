@@ -172,8 +172,8 @@ Player.prototype = {
     if (self.torpedo != null) {
       if (self.torpedo.is_dead(self.torpedo)) {
         self.torpedo = null;
-      } else {
-        self.torpedo.draw(self.torpedo);
+      // } else {
+      //   self.torpedo.draw(self.torpedo);
       }
     }
   }

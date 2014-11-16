@@ -51,6 +51,8 @@ Torpedo.prototype = {
     self.orientation = orientation || -Math.PI/2;
     self.x = x;
     self.y = y;
+    self.px = x;
+    self.py = y;
     self.sx = x;
     self.sy = y;
     var min_dy = gamescreen.height*2;
@@ -92,7 +94,6 @@ Torpedo.prototype = {
     var asteroids = gamelogic.asteroids;
     //console.log(asteroids);
     //console.log("id:"+self.asteroid_id);
-    self.y_addition+=self.speed_steps[self.cur_speed_step];
     var ast = asteroids[self.asteroid_id];
     if (ast!=null) {
       self.tx = ast.x;
@@ -127,9 +128,10 @@ Torpedo.prototype = {
     }
     self.px = self.x;
     self.py = self.y;
-    self.y += Math.sin(self.orientation)*self.velocity;
+    self.y += Math.sin(self.orientation)*self.velocity + self.speed_steps[self.cur_speed_step];
     self.x += Math.cos(self.orientation)*self.velocity;
-    gamescreen.put_triangle(gamescreen, "white", self.orientation+Math.PI/2, 1, self.x, self.y+self.y_addition, -3, 3, 0, -6, 3, 3);
+    var angle = Math.atan2(self.y-self.py, self.x-self.px);
+    gamescreen.put_triangle(gamescreen, "white", angle+Math.PI/2, 1, self.x, self.y, -3, 3, 0, -6, 3, 3);
     
     if (self.trail_ctr > self.const_trail_period) {
       self.trail.push([self.x, self.y]);

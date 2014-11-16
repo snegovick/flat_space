@@ -382,8 +382,11 @@ GameLogic.prototype = {
   },
 
   check_torpedo_collision: function(self, torpedo, asteroid) {
-    if (pt_to_pt_dist([torpedo.x, torpedo.y], [asteroid.x, asteroid.y])<(asteroid.const_max_ast_r+torpedo.r)) {
-      //console.log("torpedo collision");
+    if (pt_to_pt_dist([torpedo.x, torpedo.y], [asteroid.x, asteroid.y])<(asteroid.const_max_ast_r)) {
+    // var tr = mk_rect(torpedo.x, torpedo.y, torpedo.px, torpedo.py);
+    // var ta = mk_rect(asteroid.x, asteroid.y, asteroid.px, asteroid.py);
+    // if (rect_intersect(tr, ta)) {
+      console.log("torpedo collision");
       return true;
     }
     return false;
@@ -435,10 +438,7 @@ GameLogic.prototype = {
     }
   },
 
-  draw: function(self) {
-    self.stage.draw(self.stage);
-    self.background.draw(self.background);
-
+  gen_asteroids: function(self) {
     if (!self.pause && self.generate_asteroids) {
       if (self.next_ast_ctr <= 0) {
         //console.log(self.asteroids);
@@ -462,6 +462,9 @@ GameLogic.prototype = {
       //console.log(self.asteroids);
       self.next_ast_ctr --;
     }
+  },
+
+  ast_ast_col: function(self) {
     if (self.active_asteroids>0) {
       var n_ast = 0;
       for (var i = 0; i < self.asteroids.length; i++) {
@@ -480,6 +483,9 @@ GameLogic.prototype = {
         }
       }
     }
+  },
+
+  collect_torpedos: function(self) {
     var torpedos = [self.player.get_torpedo(self.player)];
     var obj_cnt = 0;
     if (self.active_objects>0) {
@@ -502,18 +508,20 @@ GameLogic.prototype = {
         }
       }
     }
+    return torpedos;
+  },
 
-
+  ast_tor_col: function(self, torpedos) {
     for (var j = 0; j < torpedos.length; j++) {
       var torpedo = torpedos[j];
       if (torpedo != null) {
+        torpedo.draw(torpedo);
         if (self.active_asteroids>0) {
           var n_ast = 0;
           for (var i = 0; i < self.asteroids.length; i++) {
             if (self.asteroids[i] != null) {
               n_ast ++;
               if (self.check_torpedo_collision(self, torpedo, self.asteroids[i])) {
-                torpedo.draw(torpedo);
                 torpedo.explode(torpedo);
                 var sz = self.asteroids[i].get_size(self.asteroids[i]);
                 if (sz > 3) {
@@ -532,7 +540,7 @@ GameLogic.prototype = {
                 self.active_asteroids --;
                 self.asteroids[i] = null;
                 n_ast --;
-                //break;
+                break;
               }
             }
             if (n_ast >= self.active_asteroids) {
@@ -542,7 +550,9 @@ GameLogic.prototype = {
         }
       }
     }
-      
+  },
+
+  ast_pla_col: function(self) {
     if (self.active_asteroids>0) {
       var n_ast = 0;
       for (var i = 0; i < self.asteroids.length; i++) {
@@ -565,7 +575,9 @@ GameLogic.prototype = {
       }
     }
 
-//    console.log(self.remainders);
+  },
+
+  rem_draw: function(self) {
     for (var i = 0; i < self.remainders.length; i++) {
       var rem = self.remainders[i];
       if (rem != null) {
@@ -582,6 +594,19 @@ GameLogic.prototype = {
         }
       }
     }
+  },
+
+  draw: function(self) {
+    self.stage.draw(self.stage);
+    self.background.draw(self.background);
+    self.gen_asteroids(self);
+    self.ast_ast_col(self);
+
+    var torpedos = self.collect_torpedos(self);
+    self.ast_tor_col(self, torpedos);
+
+    self.ast_pla_col(self);
+    self.rem_draw(self);
 
     //console.log(self.objects);
 

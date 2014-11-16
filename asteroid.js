@@ -96,6 +96,8 @@ Asteroid.prototype = {
     
     self.x = Math.random()*gamescreen.width || x;
     self.y = -self.const_max_ast_r;
+    self.px = self.x;
+    self.py = self.y;
     self.angular_velocity = 2*self.const_max_ang_vel*(Math.random()-0.5);
     //console.log(self.speed);
   },

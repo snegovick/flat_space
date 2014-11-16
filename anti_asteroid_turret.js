@@ -120,8 +120,8 @@ AATurret.prototype = {
       if (self.torpedos[i]!=null) { 
         if (self.torpedos[i].is_dead(self.torpedos[i])) {
           self.torpedos[i] = null;
-        } else {
-          self.torpedos[i].draw(self.torpedos[i]);
+        // } else {
+        //   self.torpedos[i].draw(self.torpedos[i]);
         }
       }
     }
