@@ -26,6 +26,11 @@ Tutorial_Stage.prototype = {
   wait_checkpoint: 21,
   show_jumpgate_msg: 22,
   wait_jumpgate_msg: 23,
+  start_jump: 24,
+  wait_jump: 25,
+
+  jump_ctr: 0,
+  jump_ctr_max: 1000,
 
   turret_progress: 700,
   checkpoint_progress: 900,
@@ -163,7 +168,7 @@ Tutorial_Stage.prototype = {
     switch (self.state) {
     case self.stop_after_st_dis:
       if (progress.is_stage_display_done(progress)) {
-        self.set_wait_keycode(self, ch_s);
+        self.set_wait_keycode(self, ch_j);
         //gamelogic.set_pause(gamelogic);
         self.state = self.show_greet_msg;
       }
@@ -171,7 +176,7 @@ Tutorial_Stage.prototype = {
 
     case self.show_greet_msg:
       if (self.get_wait_keycode_state(self)) {
-        self.state = self.show_outro;
+        self.state = self.start_jump;
         break;
       }
       if (self.display_message_delay(self, self.msg_greet)) {
@@ -380,16 +385,31 @@ Tutorial_Stage.prototype = {
     case self.show_jumpgate_msg:
       if (self.display_message_delay(self, self.msg_jumpgate)) {
         self.set_delay(self, self.const_delay);
-        self.state = self.waut_jumpgate_msg;
+        self.state = self.wait_jumpgate_msg;
       }
       break;
 
     case self.wait_jumpgate_msg:
       self.display_message(self, self.msg_jumpgate);
       if (self.get_delay(self)) {
-        self.state ++;
+        self.state = self.start_jump;
       }
+      break;
 
+    case self.start_jump:
+      gamelogic.set_jump(gamelogic);
+      console.log("start jump");
+      self.jump_ctr = (1-hud.get_luck(hud))*self.jump_ctr_max;
+      self.state = self.wait_jump;
+      break;
+
+    case self.wait_jump:
+      self.jump_ctr --;
+      console.log(self.jump_ctr);
+      if (self.jump_ctr < 0) {
+        gamelogic.unset_jump(gamelogic);
+        self.state++;
+      }
       break;
       
     default: 

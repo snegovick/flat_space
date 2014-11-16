@@ -89,6 +89,7 @@ GameLogic.prototype = {
   left: false,
   right: false,
   speed_step: 0,
+  speed_step_max: 4,
 
   generate_asteroids: false,
   asteroids: [null, null, null, null, null, null, null, null, null, null,
@@ -96,6 +97,7 @@ GameLogic.prototype = {
               null, null, null, null],
   active_asteroids: 0,
   natural_asteroids: 18,
+  const_natural_asteroids: 18,
   
   remainders: [null, null, null, null, null, null, null, null, null, null, null, null,null, null, null, null, null, null, null, null, null, null, null, null],
   const_remainder_prob: 0.5,
@@ -110,10 +112,25 @@ GameLogic.prototype = {
   
   pause: false,
   stage: null,
+  jump: false,
+  const_jump_asteroids: 10,
 
-  jump: function(self) {
-    self.background.set_jump(self.background);
+  set_jump: function(self) {
+    self.jump = true;
+    self.speed_step = self.speed_step_max;
     self.player.set_jump(self.player);
+    self.background.set_jump(self.background);
+    self.natural_asteroids = self.const_jump_asteroids;
+  },
+
+  unset_jump: function(self) {
+    self.jump = false;
+    self.speed_step = 0;
+    self.player.unset_jump(self.player);
+    self.background.unset_jump(self.background);
+    self.natural_asteroids = self.const_natural_asteroids;
+    self.unset_generate_asteroids(self);
+    self.set_normal_speed(self);
   },
 
   add_object: function(self, object) {
@@ -237,24 +254,25 @@ GameLogic.prototype = {
   },
 
   keydown: function(self, event) {
-    //console.log("down");
-    //console.log(event);
+    console.log("down");
+    console.log(event);
     if (event.keyCode == 16) { // shift
-      if (hud.dec_fuel(hud)) {
-        self.speed_step ++;
-        progress.inc_speed(progress);
-        self.background.inc_speed(self.background);
-        self.player.inc_speed(self.player);
-        for (var i = 0; i < self.natural_asteroids; i++) {
-          if (self.asteroids[i] != null) {
-            self.asteroids[i].inc_speed(self.asteroids[i]);
-          }
-        }
-      }
+      // if (hud.dec_fuel(hud)) {
+      //   self.speed_step ++;
+      //   progress.inc_speed(progress);
+      //   self.background.inc_speed(self.background);
+      //   self.player.inc_speed(self.player);
+      //   for (var i = 0; i < self.natural_asteroids; i++) {
+      //     if (self.asteroids[i] != null) {
+      //       self.asteroids[i].inc_speed(self.asteroids[i]);
+      //     }
+      //   }
+      // }
     }
     if (event.keyCode == 32) { // space
-      //self.player.launch_torpedo(self.player, self.asteroids);
-      self.jump(self);
+      if (! self.jump) {
+        self.player.launch_torpedo(self.player, self.asteroids);
+      }
     }
     if (event.keyCode == 65) { // a
       self.left = true;
@@ -304,6 +322,18 @@ GameLogic.prototype = {
     for (var i = 0; i < self.asteroids.length; i++) {
       if (self.asteroids[i] != null) {
         self.asteroids[i].set_normal_speed(self.asteroids[i]);
+      }
+    }
+  },
+
+  set_fast_speed: function(self) {
+    self.speed_step = self.speed_step_max;
+    //progress.set_normal_speed(progress);
+    self.player.set_speed_step(self.player, self.speed_step);
+    self.background.set_speed_step(self.background, self.speed_step);
+    for (var i = 0; i < self.asteroids.length; i++) {
+      if (self.asteroids[i] != null) {
+        self.asteroids[i].set_speed_step(self.asteroids[i], self.speed_step);
       }
     }
   },
@@ -416,7 +446,11 @@ GameLogic.prototype = {
             if (self.asteroids[i] == null) {
               self.active_asteroids ++;
               self.asteroids[i] = new Asteroid();
-              self.asteroids[i].init(self.asteroids[i], 2);
+              if (self.jump) {
+                self.asteroids[i].init(self.asteroids[i], 2, (Math.random()*0.2-0.1)*gamescreen.width+gamescreen.width/2);
+              } else {
+                self.asteroids[i].init(self.asteroids[i], 2);
+              }
               self.asteroids[i].set_speed_step(self.asteroids[i], self.speed_step);
               break;
             }
@@ -505,7 +539,9 @@ GameLogic.prototype = {
             if (self.check_player_collision(self, self.player, self.asteroids[i])) {
               
               hud.dec_luck(hud);
-              self.set_normal_speed(self);
+              if (!self.jump) {
+                self.set_normal_speed(self);
+              }
             }
           }
         } else {
@@ -544,6 +580,12 @@ GameLogic.prototype = {
       //self.background.set_x_offset(self.background, 200*(self.player.x/(gamescreen.width/2)-1));
     }
 
+    if (self.jump) {
+      if (self.background.get_jump_started(self.background)) {
+        self.set_generate_asteroids(self);
+        self.set_fast_speed(self);
+      }
+    }
     self.player.draw(self.player);
     progress.draw(progress);
     if (progress.get_stage_complete(progress)) {

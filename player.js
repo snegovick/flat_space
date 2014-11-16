@@ -9,6 +9,8 @@ Player.prototype = {
   top: 20,
   bottom: 10,
 
+  x_step: 10,
+
   grip_reach_dist: 0,
   torpedo: null,
   cur_speed_step: 0,
@@ -19,6 +21,7 @@ Player.prototype = {
   jump: false,
   jump_anim_ctr: 0,
   const_jump_start_ctr: 120,
+  const_lightning_color: "#00BFFF",
 
   set_pause: function(self) {
     self.pause = true;
@@ -97,7 +100,6 @@ Player.prototype = {
 
 
   draw_jump: function(self) {
-    self.vx = 0;
     self.x = self.vx + gamescreen.width/2;
     var c = self.jump_anim_ctr/self.const_jump_start_ctr;
     var k;
@@ -114,6 +116,14 @@ Player.prototype = {
       self.vy = -(k*self.jump_anim_ctr+b);
     }
     if (self.jump_anim_ctr < self.const_jump_start_ctr) {
+      if (self.vx != 0) {
+        var direction = self.vx/Math.abs(self.vx);
+        if (Math.abs(self.vx)>self.const_x_velocity) {
+          self.vx -= direction*self.const_x_velocity;
+        } else {
+          self.vx = 0;
+        }
+      }
       self.jump_anim_ctr++;
     } else {
       self.vy = 0;
@@ -121,8 +131,8 @@ Player.prototype = {
     var l = gamescreen.height;
     var w = Math.floor(3*c);
     if (w>0) {
-      gamescreen.put_line(gamescreen, "white", self.x, self.y-self.top, self.x, self.y-l, w);
-      gamescreen.put_line(gamescreen, "white", self.x, self.y+self.bottom, self.x, self.y+l, w);
+      gamescreen.put_line(gamescreen, self.const_lightning_color, self.x, self.y-self.top, self.x, self.y-l, w);
+      gamescreen.put_line(gamescreen, self.const_lightning_color, self.x, self.y+self.bottom, self.x, self.y+l, w);
     }
     var points1 = [[self.x,self.y+self.top*2],[0,0],[0,0],[0,0],[0,0],[0,0],[self.x,self.y-self.top*2]];
     var points2 = [[self.x,self.y+self.top*2],[0,0],[0,0],[0,0],[0,0],[0,0],[self.x,self.y-self.top*2]];
@@ -138,8 +148,8 @@ Player.prototype = {
     }
 
     if (w>0) {
-      gamescreen.put_multi_line(gamescreen, "white", 0, 0, 0, points1, w, false);
-      gamescreen.put_multi_line(gamescreen, "white", 0, 0, 0, points2, w, false);
+      gamescreen.put_multi_line(gamescreen, self.const_lightning_color, 0, 0, 0, points1, w, false);
+      gamescreen.put_multi_line(gamescreen, self.const_lightning_color, 0, 0, 0, points2, w, false);
     }
 
   },

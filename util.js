@@ -34,3 +34,4 @@ function put_rect(ctx, style, orientation, x, y, w, h) {
 }
 
 var ch_s = 83;
+var ch_j = 74;

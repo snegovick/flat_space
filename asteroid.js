@@ -19,7 +19,7 @@ Asteroid.prototype = {
   x: 0,
   y: 0,
   highlight: false,
-  speed_steps: [5, 10, 15, 20, 25],
+  speed_steps: [5, 10, 15, 20, 40],
   speed_addition: 5,
   cur_speed_step: 0,
   pause: false,
@@ -67,7 +67,7 @@ Asteroid.prototype = {
     return self.size;
   },
 
-  init: function(self, size, remainder_prob) {
+  init: function(self, size, remainder_prob, x) {
     self.points = [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]];
     var r = 0;
     var angle_increment = Math.PI*2/self.points.length;
@@ -91,7 +91,8 @@ Asteroid.prototype = {
     self.calc_trig(self, self.orientation);
     self.speed = Math.random()*(self.const_max_speed-self.const_min_speed) + self.const_min_speed;
     self.speed_addition = self.speed_steps[self.cur_speed_step];
-    self.x = Math.random()*gamescreen.width;
+    
+    self.x = Math.random()*gamescreen.width || x;
     self.y = -self.const_max_ast_r;
     self.angular_velocity = 2*self.const_max_ang_vel*(Math.random()-0.5);
     //console.log(self.speed);

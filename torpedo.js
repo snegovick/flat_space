@@ -7,7 +7,7 @@ Torpedo.prototype = {
   sy: 0,
   velocity: 10,
   orientation: 0,
-  ttl: 20,
+  ttl: 10,
   dead: false,
   exploded: false,
   r: 5,

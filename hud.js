@@ -28,6 +28,10 @@ Hud.prototype = {
       self.luck_count+=0.001;
     }
   },
+
+  get_luck: function(self) {
+    return self.luck_count;
+  },
   
   dec_luck: function(self) {
     self.luck_count-=0.1;
