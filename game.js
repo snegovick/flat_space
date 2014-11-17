@@ -1100,7 +1100,7 @@ Tutorial_Stage.prototype = {
     hud.reset_fuel(hud);
     hud.reset_luck(hud);
     gamelogic.unset_jump(gamelogic);
-    progress.set_display_progress(progress);
+    progress.unset_display_progress(progress);
     gamelogic.set_generate_asteroids(gamelogic);
     gamelogic.set_remainder_prob(gamelogic, 1);
     gamelogic.set_fuel_prob(gamelogic, 1);
@@ -1904,8 +1904,8 @@ GameLogic.prototype = {
   },
 
   keydown: function(self, event) {
-    console.log("down");
-    console.log(event);
+    //console.log("down");
+    //console.log(event);
     if (event.keyCode == 16) { // shift
       // if (hud.dec_fuel(hud)) {
       //   self.speed_step ++;
@@ -1968,7 +1968,9 @@ GameLogic.prototype = {
   },
 
   init: function(self) {
-    self.natural_asteroids = Math.floor(18*gamescreen.width*gamescreen.height/(800*800));
+    var n_ast = 18*gamescreen.width*gamescreen.height/(800*800);
+    n_ast = (n_ast>self.asteroids.length*0.8 ? self.asteroids.length*0.8 : n_ast)
+    self.natural_asteroids = Math.floor(n_ast);
     self.const_natural_asteroids = self.natural_asteroids;
     console.log("natural asteroids: "+self.natural_asteroids);
     self.player = new Player();

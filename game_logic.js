@@ -256,8 +256,8 @@ GameLogic.prototype = {
   },
 
   keydown: function(self, event) {
-    console.log("down");
-    console.log(event);
+    //console.log("down");
+    //console.log(event);
     if (event.keyCode == 16) { // shift
       // if (hud.dec_fuel(hud)) {
       //   self.speed_step ++;
@@ -320,7 +320,9 @@ GameLogic.prototype = {
   },
 
   init: function(self) {
-    self.natural_asteroids = Math.floor(18*gamescreen.width*gamescreen.height/(800*800));
+    var n_ast = 18*gamescreen.width*gamescreen.height/(800*800);
+    n_ast = (n_ast>self.asteroids.length*0.8 ? self.asteroids.length*0.8 : n_ast)
+    self.natural_asteroids = Math.floor(n_ast);
     self.const_natural_asteroids = self.natural_asteroids;
     console.log("natural asteroids: "+self.natural_asteroids);
     self.player = new Player();
@@ -395,7 +397,6 @@ GameLogic.prototype = {
 
   check_torpedo_collision: function(self, torpedo, asteroid) {
     if (pt_to_pt_dist([torpedo.x, torpedo.y], [asteroid.x, asteroid.y])<(asteroid.const_max_ast_r)) {
-      console.log("torpedo collision");
       return true;
     }
     return false;

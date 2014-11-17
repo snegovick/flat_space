@@ -105,7 +105,7 @@ Tutorial_Stage.prototype = {
     hud.reset_fuel(hud);
     hud.reset_luck(hud);
     gamelogic.unset_jump(gamelogic);
-    progress.set_display_progress(progress);
+    progress.unset_display_progress(progress);
     gamelogic.set_generate_asteroids(gamelogic);
     gamelogic.set_remainder_prob(gamelogic, 1);
     gamelogic.set_fuel_prob(gamelogic, 1);
