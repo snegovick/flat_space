@@ -1,7 +1,7 @@
 function Tutorial_Stage() {};
 
 Tutorial_Stage.prototype = {
-  name: "Tutorial",
+  name: "Flat space",
   stop_after_st_dis: 0,
   show_greet_msg: 1,
   wait_greet_msg: 2,
@@ -30,6 +30,7 @@ Tutorial_Stage.prototype = {
   wait_jump: 25,
   game_win: 26,
   wait_input: 27,
+  restart: 28,
 
   jump_ctr: 0,
   jump_ctr_max: 1000,
@@ -69,8 +70,7 @@ Tutorial_Stage.prototype = {
                "    It is a little bit smarter than a usual gun,",
                "    but dont count too much on that"],
 
-  msg_torpedo: ["Repair bot: I will put an average asteroid on your course.",
-                "    Use your torpedo to destroy it."],
+  msg_torpedo: ["Use torpedo to destroy asteroid."],
 
   msg_grip: ["Repair bot: Loading grip training course ...",
              "    Error: grip is automatic, no training needed",
@@ -83,8 +83,7 @@ Tutorial_Stage.prototype = {
              "    with luck-driven jump engine.",
              "    So, captain, before jumping, make sure your luck supply is 100% full."],
 
-  msg_outro: ["Repair bot: Loading final message ...",
-              "    Now collect enough fuel and jump home!",
+  msg_outro: ["Now collect enough fuel and jump home!",
               "Communication over."],
 
   msg_jumpgate: ["Jumpgate anti-asteroid protection system: Mining vessel identified", 
@@ -187,6 +186,9 @@ Tutorial_Stage.prototype = {
     }
     switch (self.state) {
     case self.stop_after_st_dis:
+      progress.unset_count_progress(progress);
+      progress.unset_display_progress(progress);
+
       if (progress.is_stage_display_done(progress)) {
         gamelogic.player.reset(gamelogic.player);
         self.set_wait_keycode(self, ch_j);
@@ -248,11 +250,22 @@ Tutorial_Stage.prototype = {
       self.display_message(self, self.msg_outro);
       if (self.get_delay(self)) {
         self.state = self.wait_turret_place;
-        progress.set_count_progress(progress);
-        progress.set_display_progress(progress);
+        //progress.set_count_progress(progress);
+        //progress.set_display_progress(progress);
         hud.set_display(hud);
         gamelogic.set_generate_asteroids(gamelogic);
       }
+      break;
+
+    case self.restart:
+      gamelogic.player.reset(gamelogic.player);
+      hud.set_display(hud);
+      gamelogic.set_generate_asteroids(gamelogic);
+      gamelogic.set_remainder_prob(gamelogic, 1);
+      gamelogic.set_fuel_prob(gamelogic, 1);
+      gamelogic.set_luck_prob(gamelogic, 1);
+      progress.unset_count_progress(progress);
+      progress.unset_display_progress(progress);
       break;
 
     case self.wait_turret_place:
@@ -339,7 +352,7 @@ Tutorial_Stage.prototype = {
     case self.wait_input:
       self.display_message(self, self.last_msg);
       if (self.get_wait_keycode_state(self)) {
-        self.state = self.stop_after_st_dis;
+        self.state = self.restart;
         self.reset_all(self);
       }
       break;

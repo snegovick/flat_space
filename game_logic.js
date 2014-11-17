@@ -256,8 +256,8 @@ GameLogic.prototype = {
   },
 
   keydown: function(self, event) {
-    //console.log("down");
-    //console.log(event);
+    console.log("down");
+    console.log(event);
     if (event.keyCode == 16) { // shift
       // if (hud.dec_fuel(hud)) {
       //   self.speed_step ++;
@@ -282,6 +282,13 @@ GameLogic.prototype = {
     if (event.keyCode == 68) { // d
       self.right = true;
     }
+    if (event.keyCode == 37) { // left
+      self.left = true;
+    }
+    if (event.keyCode == 39) { // right
+      self.right = true;
+    }
+
     self.stage.inject_keydown(self.stage, event.keyCode);
   },
 
@@ -301,6 +308,12 @@ GameLogic.prototype = {
       self.left = false;
     }
     if (event.keyCode == 68) { // d
+      self.right = false;
+    }
+    if (event.keyCode == 37) { // left
+      self.left = false;
+    }
+    if (event.keyCode == 39) { // right
       self.right = false;
     }
 
