@@ -28,11 +28,13 @@ Tutorial_Stage.prototype = {
   wait_jumpgate_msg: 23,
   start_jump: 24,
   wait_jump: 25,
+  game_win: 26,
+  wait_input: 27,
 
   jump_ctr: 0,
   jump_ctr_max: 1000,
 
-  turret_progress: 300,
+  turret_progress: 100,
 
   state: 0,
   
@@ -88,8 +90,28 @@ Tutorial_Stage.prototype = {
   msg_jumpgate: ["Jumpgate anti-asteroid protection system: Mining vessel identified", 
                  "    Proceed to jumpgate"],
 
+  msg_win: ["You are finally home!",
+           "    Press SPACE to start again."],
+
+  msg_fail: ["Oops looks like you will need new vessel!",
+           "    Press SPACE to start again."],
+
+
+  last_msg: 0,
+
   torpedo_launchers: [null, null, null],
   tl_handlers: [0,0,0],
+
+  reset_all: function(self) {
+    hud.reset_fuel(hud);
+    hud.reset_luck(hud);
+    gamelogic.unset_jump(gamelogic);
+    progress.set_display_progress(progress);
+    gamelogic.set_generate_asteroids(gamelogic);
+    gamelogic.set_remainder_prob(gamelogic, 1);
+    gamelogic.set_fuel_prob(gamelogic, 1);
+    gamelogic.set_luck_prob(gamelogic, 1);
+  },
 
   get_name: function(self) {
     return self.name;
@@ -160,13 +182,18 @@ Tutorial_Stage.prototype = {
   },
 
   draw: function(self) {
+    if (hud.get_luck(hud)<=0 && ((self.state != self.game_fail) && (self.state != self.wait_input))) {
+      self.state = self.game_fail;
+    }
     switch (self.state) {
     case self.stop_after_st_dis:
       if (progress.is_stage_display_done(progress)) {
+        gamelogic.player.reset(gamelogic.player);
         self.set_wait_keycode(self, ch_j);
         //gamelogic.set_pause(gamelogic);
         self.state = self.show_greet_msg;
         self.set_delay(self, self.const_delay);
+        gamelogic.unset_generate_asteroids(gamelogic);
       }
       break;
 
@@ -185,6 +212,7 @@ Tutorial_Stage.prototype = {
       var off = player.r*2;
       self.state = self.check_torpedo_launch;
       gamelogic.set_remainder_prob(gamelogic, 1);
+      gamelogic.set_fuel_prob(gamelogic, 1);
       gamelogic.set_luck_prob(gamelogic, 1);
       gamelogic.create_new_asteroid(gamelogic, false, player.x, player.y-gamescreen.height/5, 2, Math.PI/2, -5);
       self.msg_torpedo.push("Press SPACE");
@@ -228,7 +256,7 @@ Tutorial_Stage.prototype = {
       break;
 
     case self.wait_turret_place:
-      if (hud.get_fuel(hud)>self.turret_progress) {
+      if (hud.get_fuel(hud)>=self.turret_progress) {
         self.set_delay(self, self.const_delay);
         self.state = self.wait_checkpoint;
         var x_pos = gamescreen.width/4;
@@ -267,26 +295,52 @@ Tutorial_Stage.prototype = {
     case self.start_jump:
       gamelogic.set_jump(gamelogic);
       console.log("start jump");
-      self.jump_ctr = (1-hud.get_luck(hud))*self.jump_ctr_max;
+      self.jump_ctr = self.jump_ctr_max;
       console.log("jump ctr:"+self.jump_ctr);
       self.state = self.wait_jump;
       progress.unset_count_progress(progress);
       progress.unset_display_progress(progress);
-
+      hud.set_display(hud);
       break;
 
     case self.wait_jump:
       if (gamelogic.background.get_jump_started(gamelogic.background)) {
         if (Math.abs(gamelogic.player.vx)>gamescreen.width*gamelogic.background.const_b_max) {
-          gamelogic.unset_jump(gamelogic);
+          console.log("premature jump abort");
+          self.state = self.wait_turret_place;
+          self.reset_all(self);
         }
 
         self.jump_ctr --;
         if (self.jump_ctr < 0) {
           gamelogic.unset_jump(gamelogic);
-          self.state++;
+          self.state = self.game_win;
           console.log("game over next there");
         }
+      }
+      break;
+    case self.game_win:
+      if (self.display_message_delay(self, self.msg_win)) {
+        self.last_msg = self.msg_win;
+        self.set_wait_keycode(self, 32); // space
+        self.state = self.wait_input;
+      }
+      break;
+
+    case self.game_fail:
+      gamelogic.unset_generate_asteroids(gamelogic);
+      if (self.display_message_delay(self, self.msg_fail)) {
+        self.last_msg = self.msg_fail;
+        self.set_wait_keycode(self, 32); // space
+        self.state = self.wait_input;
+      }
+      break;
+
+    case self.wait_input:
+      self.display_message(self, self.last_msg);
+      if (self.get_wait_keycode_state(self)) {
+        self.state = self.stop_after_st_dis;
+        self.reset_all(self);
       }
       break;
       

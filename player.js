@@ -12,6 +12,8 @@ Player.prototype = {
   bottom: 10,
 
   x_step: 10,
+  
+  y_addition: 0,
 
   grip_reach_dist: 0,
   torpedo: null,
@@ -24,6 +26,14 @@ Player.prototype = {
   jump_anim_ctr: 0,
   const_jump_start_ctr: 120,
   const_lightning_color: "#00BFFF",
+
+  reset: function(self) {
+    self.y_addition = 0;
+  },
+
+  explode: function(self) {
+    self.y_addition = -2*gamescreen.height;
+  },
 
   set_pause: function(self) {
     self.pause = true;
@@ -72,7 +82,7 @@ Player.prototype = {
   },
 
   init: function(self) {
-    self.const_x_velocity = gamescreen.height/30;
+    self.const_x_velocity = gamescreen.width/50;
     self.grip_reach_dist = 10*self.r;
   },
 
@@ -161,7 +171,7 @@ Player.prototype = {
       self.px = self.x;
       self.py = self.y;
       self.x = self.vx + gamescreen.width/2;
-      self.y = self.vy + 4*gamescreen.height/5;
+      self.y = self.vy + 4*gamescreen.height/5 + self.y_addition;
     }
 
     if (self.jump) {
