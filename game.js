@@ -14,8 +14,8 @@ GameScreen.prototype = {
     self.canvas = document.getElementById("canvas");
     var min_dim = Math.min(window.innerWidth, window.innerHeight);
     console.log("min_dim:", min_dim);
-    self.canvas.height = Math.floor(window.innerHeight*0.9);
-    self.canvas.width = Math.floor(window.innerWidth*0.9);
+    self.canvas.height = Math.floor(window.innerHeight - 20);
+    self.canvas.width = Math.floor(window.innerWidth - 20);
     //self.canvas.width = self.canvas.height*9/16;
     // self.canvas.width = 720;
     // self.canvas.height = 1280;
@@ -1969,7 +1969,7 @@ GameLogic.prototype = {
 
   init: function(self) {
     var n_ast = 18*gamescreen.width*gamescreen.height/(800*800);
-    n_ast = (n_ast>self.asteroids.length*0.8 ? self.asteroids.length*0.8 : n_ast)
+    n_ast = (n_ast>self.asteroids.length*0.6 ? self.asteroids.length*0.6 : n_ast)
     self.natural_asteroids = Math.floor(n_ast);
     self.const_natural_asteroids = self.natural_asteroids;
     console.log("natural asteroids: "+self.natural_asteroids);
@@ -2045,7 +2045,6 @@ GameLogic.prototype = {
 
   check_torpedo_collision: function(self, torpedo, asteroid) {
     if (pt_to_pt_dist([torpedo.x, torpedo.y], [asteroid.x, asteroid.y])<(asteroid.const_max_ast_r)) {
-      console.log("torpedo collision");
       return true;
     }
     return false;
