@@ -64,5 +64,38 @@ function put_rect(ctx, style, orientation, x, y, w, h) {
   ctx.translate(-x, -y);
 }
 
+function put_multi_line(ctx, style, x, y, orientation, points, width, transform) {
+  if (transform == undefined) {
+    transform = true;
+  }
+  width = width || 5;
+  if (transform) {
+    ctx.translate(x, y);
+    if (orientation != 0) {
+      ctx.rotate(orientation);
+    }
+  }
+  var old_color = ctx.fillStyle;
+  var old_width = ctx.lineWidth;
+  ctx.strokeStyle = style;
+  ctx.lineWidth = width;
+  ctx.beginPath();
+  ctx.moveTo(points[0][0], points[0][1]);
+  for (var i = 1; i < points.length; i++) {
+    ctx.lineTo(points[i][0], points[i][1]);
+  }
+  //ctx.lineTo(points[0][0], points[0][1]);
+  ctx.stroke();
+  ctx.strokeStyle = old_color;
+  ctx.lineWidth = old_width;
+  if (transform) {
+    if (orientation != 0) {
+      ctx.rotate(-orientation);
+    }
+    ctx.translate(-x, -y);
+  }
+}
+
+
 var ch_s = 83;
 var ch_j = 74;

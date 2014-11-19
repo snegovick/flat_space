@@ -51,6 +51,10 @@ Torpedo.prototype = {
       self.cur_speed_step = self.speed_steps.length - 1;
     }
   },
+
+  find_closest_ahead: function(self, x, y, orientation, asteroids) {
+    
+  },
   
   init: function(self, x, y, asteroids, orientation, max_ang_vel) {
     self.start_dir = self.orientation+(Math.random()*0.2-0.1);

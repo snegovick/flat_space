@@ -266,6 +266,7 @@ Tutorial_Stage.prototype = {
       gamelogic.set_luck_prob(gamelogic, 1);
       progress.unset_count_progress(progress);
       progress.unset_display_progress(progress);
+      self.state = self.show_outro;
       break;
 
     case self.wait_turret_place:

@@ -563,12 +563,13 @@ AATurret.prototype = {
   orientation: 0,
   r: 30,
   torpedos: null,
+  const_max_torpedos: 4,
   cur_speed_step: 0,
   speed_steps: [5,10,15,20,25],
   rel_speed: 5,
   const_x_velocity: 0,
   pause: false,
-  points: [[0,0], [0,0], [0,0], [0,0], [0,0], [0,0]],
+  points: null,
 
   launch_ctr: 0,
   const_launch_ctr: 90,
@@ -622,7 +623,8 @@ AATurret.prototype = {
   },
 
   init: function(self, x_pos, y_pos, orientation) {
-    self.torpedos = [null, null, null, null];
+    self.torpedos = [];
+    self.points = [[0,0], [0,0], [0,0], [0,0], [0,0]];
     self.x = x_pos;
     self.y = y_pos;
     self.orientation = orientation;
@@ -631,28 +633,33 @@ AATurret.prototype = {
     var ang_inc = 2*Math.PI/self.points.length;
     var ang = 0;
     for (var i = 0; i < self.points.length; i++) {
-      x = Math.cos(ang)*self.r;
-      y = Math.sin(ang)*self.r;
+      x = Math.cos(ang)*self.r+self.r;
+      y = Math.sin(ang)*self.r+self.r;
       self.points[i] = [x, y];
       ang+=ang_inc;
     }
     ang = 0;
-    x = Math.cos(ang)*self.r;
-    y = Math.sin(ang)*self.r;
+    x = Math.cos(ang)*self.r+self.r;
+    y = Math.sin(ang)*self.r+self.r;
     
     self.points.push([x, y]);
+
+    self.width = self.r*2;
+    self.height = self.r*2;
+    self.canvas_buffer = render_to_canvas(self.width, self.height, function(w,h,ctx) {
+      ctx.clearRect(0, 0, w, h);
+      put_rect(ctx, "transparent", 0, w/2, h/2, w, h);
+      put_multi_line(ctx, "white", self.x, self.y, self.orientation, self.points, 2, false);
+    });
+
   },
 
   launch_torpedo: function(self, asteroids) {
-    for (var i = 0; i < self.torpedos.length; i++) {
-      if (self.torpedos[i]==null) {
-        self.torpedos[i] = new Torpedo();
-        if (!self.torpedos[i].init(self.torpedos[i], self.x, self.y-self.r, asteroids, self.orientation, 0.3)) {
-          self.torpedos[i] = null;
-        } else {
-          self.torpedos[i].set_speed_step(self.torpedos[i], self.cur_speed_step);
-        }
-        break;
+    if (self.torpedos.length-self.const_max_torpedos>0) {
+      var t = new Torpedo();
+      if (t.init(self.torpedos[i], self.x, self.y-self.r, asteroids, self.orientation, 0.3)) {
+        t.set_speed_step(self.torpedos[i], self.cur_speed_step);
+        self.torpedos.push(t);
       }
     }
   },
@@ -670,14 +677,11 @@ AATurret.prototype = {
       }
       self.launch_ctr++;
     }
-    gamescreen.put_multi_line(gamescreen, "white", self.x, self.y, self.orientation, self.points, 2);
+    gamescreen.put_image(gamescreen, self.canvas_buffer, self.x-self.width/2, self.y-self.height/2);
     for (var i = 0; i < self.torpedos.length; i++) {
-      if (self.torpedos[i]!=null) { 
-        if (self.torpedos[i].is_dead(self.torpedos[i])) {
-          self.torpedos[i] = null;
-        // } else {
-        //   self.torpedos[i].draw(self.torpedos[i]);
-        }
+      if (self.torpedos[i].is_dead(self.torpedos[i])) {
+        self.torpedos.splice(i, 1);
+        i--;
       }
     }
   }
@@ -1261,6 +1265,7 @@ Tutorial_Stage.prototype = {
       gamelogic.set_luck_prob(gamelogic, 1);
       progress.unset_count_progress(progress);
       progress.unset_display_progress(progress);
+      self.state = self.show_outro;
       break;
 
     case self.wait_turret_place:
@@ -1578,7 +1583,7 @@ Hud.prototype = {
   },
 
   reset_fuel: function(self) {
-    self.fuel_count = 0;
+    self.fuel_count = 90;
   },
 
   get_fuel: function(self) {
@@ -1731,7 +1736,7 @@ GameLogic.prototype = {
   const_ms_in_s: 1000,
 
   next_ast_ctr: 30,
-  const_ast_spawn_t: 5,
+  const_ast_spawn_t: 10,
   player: null,
   background: null,
   left: false,
@@ -2446,6 +2451,39 @@ function put_rect(ctx, style, orientation, x, y, w, h) {
   }
   ctx.translate(-x, -y);
 }
+
+function put_multi_line(ctx, style, x, y, orientation, points, width, transform) {
+  if (transform == undefined) {
+    transform = true;
+  }
+  width = width || 5;
+  if (transform) {
+    ctx.translate(x, y);
+    if (orientation != 0) {
+      ctx.rotate(orientation);
+    }
+  }
+  var old_color = ctx.fillStyle;
+  var old_width = ctx.lineWidth;
+  ctx.strokeStyle = style;
+  ctx.lineWidth = width;
+  ctx.beginPath();
+  ctx.moveTo(points[0][0], points[0][1]);
+  for (var i = 1; i < points.length; i++) {
+    ctx.lineTo(points[i][0], points[i][1]);
+  }
+  //ctx.lineTo(points[0][0], points[0][1]);
+  ctx.stroke();
+  ctx.strokeStyle = old_color;
+  ctx.lineWidth = old_width;
+  if (transform) {
+    if (orientation != 0) {
+      ctx.rotate(-orientation);
+    }
+    ctx.translate(-x, -y);
+  }
+}
+
 
 var ch_s = 83;
 var ch_j = 74;
