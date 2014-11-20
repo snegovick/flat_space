@@ -397,6 +397,10 @@ Torpedo.prototype = {
   velocity: 0,
   const_velocity: 15,
   orientation: 0,
+
+  const_target_sector: 0.2,
+  const_target_dist: 0,
+  
   ttl: 10,
   dead: false,
   exploded: false,
@@ -438,8 +442,25 @@ Torpedo.prototype = {
       self.cur_speed_step = self.speed_steps.length - 1;
     }
   },
+
+  find_closest_ahead: function(self, asteroids) {
+    var idx = -1;
+    for (var i = 0; i < asteroids.length; i++) {
+      var ast = asteroids[i];
+      if (ast!=null) {
+        var angle = Math.atan2(ast.y-self.y, ast.x-self.x);
+        var dist = pt_to_pt_dist([self.x, self.y], [ast.x, ast.y]);
+        if ((Math.abs(self.orientation-angle)<self.const_target_sector)) {
+          min_dy = dist;
+          idx = i;
+        }
+      }
+    }
+    return idx;
+  },
   
   init: function(self, x, y, asteroids, orientation, max_ang_vel) {
+    self.const_target_dist = gamescreen.height/10;
     self.start_dir = self.orientation+(Math.random()*0.2-0.1);
     self.velocity = 0;
     self.trail = [];
@@ -452,21 +473,7 @@ Torpedo.prototype = {
     self.sx = x;
     self.sy = y;
     var min_dy = gamescreen.height*2;
-    var idx = -1;
-    for (var i = 0; i < asteroids.length; i++) {
-      if (asteroids[i]!=null) {
-        if (Math.abs(self.x - asteroids[i].x) < gamescreen.width/5) {
-          var dy = self.y - asteroids[i].y;
-          //console.log("dy:"+dy+" min_dy:"+min_dy);
-          if (dy > gamescreen.height/10) {
-            if (dy < min_dy) {
-              min_dy = dy;
-              idx = i;
-            }
-          }
-        }
-      }
-    }
+    var idx = self.find_closest_ahead(self, asteroids);
     if (idx == -1) {
       self.tx = self.x;
       self.ty = self.y-10000;
@@ -561,6 +568,7 @@ AATurret.prototype = {
   x: 0,
   y: 0,
   orientation: 0,
+  ang_vel: 0.06,
   r: 30,
   torpedos: null,
   const_max_torpedos: 4,
@@ -572,7 +580,7 @@ AATurret.prototype = {
   points: null,
 
   launch_ctr: 0,
-  const_launch_ctr: 90,
+  const_launch_ctr: 10,
 
   set_pause: function(self) {
     self.pause = true;
@@ -623,11 +631,13 @@ AATurret.prototype = {
   },
 
   init: function(self, x_pos, y_pos, orientation) {
+    var sign = (Math.random()>0.5?1:-1);
+    self.ang_vel = sign*0.2+sign*Math.random()*0.3
     self.torpedos = [];
     self.points = [[0,0], [0,0], [0,0], [0,0], [0,0]];
     self.x = x_pos;
     self.y = y_pos;
-    self.orientation = orientation;
+    self.orientation = 2*Math.random()*Math.PI-Math.PI;
     var x;
     var y;
     var ang_inc = 2*Math.PI/self.points.length;
@@ -655,12 +665,12 @@ AATurret.prototype = {
   },
 
   launch_torpedo: function(self, asteroids) {
-    if (self.torpedos.length-self.const_max_torpedos>0) {
+    if (self.const_max_torpedos-self.torpedos.length>0) {
       var t = new Torpedo();
-      if (t.init(self.torpedos[i], self.x, self.y-self.r, asteroids, self.orientation, 0.3)) {
-        t.set_speed_step(self.torpedos[i], self.cur_speed_step);
+      if (t.init(t, self.x, self.y-self.r, asteroids, self.orientation, 0.3)) {
+        t.set_speed_step(t, self.cur_speed_step);
         self.torpedos.push(t);
-      }
+      } 
     }
   },
 
@@ -669,6 +679,13 @@ AATurret.prototype = {
   },
 
   draw: function(self) {
+    
+    self.orientation+=self.ang_vel;
+    if (self.orientation > Math.PI) {
+      self.orientation -= Math.PI*2;
+    } else if (self.orientation < -Math.PI) {
+      self.orientation += Math.PI*2;
+    }
     if (! self.pause) {
       self.y += self.rel_speed;
       if (self.launch_ctr > self.const_launch_ctr) {
@@ -678,6 +695,8 @@ AATurret.prototype = {
       self.launch_ctr++;
     }
     gamescreen.put_image(gamescreen, self.canvas_buffer, self.x-self.width/2, self.y-self.height/2);
+    gamescreen.put_triangle(gamescreen, "white", self.orientation, 2, self.x, self.y, -5, 5, 0, -10, 5, 5);
+    
     for (var i = 0; i < self.torpedos.length; i++) {
       if (self.torpedos[i].is_dead(self.torpedos[i])) {
         self.torpedos.splice(i, 1);
@@ -1097,8 +1116,9 @@ Tutorial_Stage.prototype = {
 
   last_msg: 0,
 
-  torpedo_launchers: [null, null, null],
-  tl_handlers: [0,0,0],
+  torpedo_launchers: null,
+  tl_handlers: null,
+  const_n_torpedo_launchers: 3,
 
   reset_all: function(self) {
     hud.reset_fuel(hud);
@@ -1273,13 +1293,15 @@ Tutorial_Stage.prototype = {
         self.set_delay(self, self.const_delay);
         self.state = self.wait_checkpoint;
         var x_pos = gamescreen.width/4;
-        for (var i = 0; i < self.torpedo_launchers.length; i++) {
+        self.tl_handlers = [];
+        self.torpedo_launchers = [];
+        for (var i = 0; i < self.const_n_torpedo_launchers; i++) {
           console.log("creating turret");
           var t = new AATurret();
-          t.init(t, x_pos, -100, -Math.PI/2);
+          t.init(t, x_pos, -100, Math.PI/2);
           x_pos+=gamescreen.width/4;
-          self.torpedo_launchers[i] = t;
-          self.tl_handlers[i] = gamelogic.add_object(gamelogic, t);
+          self.torpedo_launchers.push(t);
+          self.tl_handlers.push(gamelogic.add_object(gamelogic, t));
         }
       }
       break;
@@ -1306,6 +1328,11 @@ Tutorial_Stage.prototype = {
       break;
 
     case self.start_jump:
+      for (var i = 0; i < self.tl_handlers.length; i++) {
+        gamelogic.del_object(gamelogic, self.tl_handlers[i]);
+      }
+      self.tl_handlers = [];
+      self.torpedo_launchers = [];
       gamelogic.set_jump(gamelogic);
       console.log("start jump");
       self.jump_ctr = self.jump_ctr_max;
@@ -1857,8 +1884,6 @@ GameLogic.prototype = {
         rem.set_speed_step(rem, self.speed_step);
         rem_lst.push(rem);
       }
-      //console.log("remainders list");
-      //console.log(rem_lst);
 
       for (var i = 0; i < self.remainders.length; i++) {
         if (self.remainders[i] == null) {
@@ -1870,7 +1895,6 @@ GameLogic.prototype = {
           }
         }
       }
-      //console.log(self.remainders);
     }
   },
 

@@ -6,6 +6,7 @@ AATurret.prototype = {
   x: 0,
   y: 0,
   orientation: 0,
+  ang_vel: 0.06,
   r: 30,
   torpedos: null,
   const_max_torpedos: 4,
@@ -17,7 +18,7 @@ AATurret.prototype = {
   points: null,
 
   launch_ctr: 0,
-  const_launch_ctr: 90,
+  const_launch_ctr: 10,
 
   set_pause: function(self) {
     self.pause = true;
@@ -68,11 +69,13 @@ AATurret.prototype = {
   },
 
   init: function(self, x_pos, y_pos, orientation) {
+    var sign = (Math.random()>0.5?1:-1);
+    self.ang_vel = sign*0.2+sign*Math.random()*0.3
     self.torpedos = [];
     self.points = [[0,0], [0,0], [0,0], [0,0], [0,0]];
     self.x = x_pos;
     self.y = y_pos;
-    self.orientation = orientation;
+    self.orientation = 2*Math.random()*Math.PI-Math.PI;
     var x;
     var y;
     var ang_inc = 2*Math.PI/self.points.length;
@@ -100,12 +103,12 @@ AATurret.prototype = {
   },
 
   launch_torpedo: function(self, asteroids) {
-    if (self.torpedos.length-self.const_max_torpedos>0) {
+    if (self.const_max_torpedos-self.torpedos.length>0) {
       var t = new Torpedo();
-      if (t.init(self.torpedos[i], self.x, self.y-self.r, asteroids, self.orientation, 0.3)) {
-        t.set_speed_step(self.torpedos[i], self.cur_speed_step);
+      if (t.init(t, self.x, self.y-self.r, asteroids, self.orientation, 0.3)) {
+        t.set_speed_step(t, self.cur_speed_step);
         self.torpedos.push(t);
-      }
+      } 
     }
   },
 
@@ -114,6 +117,13 @@ AATurret.prototype = {
   },
 
   draw: function(self) {
+    
+    self.orientation+=self.ang_vel;
+    if (self.orientation > Math.PI) {
+      self.orientation -= Math.PI*2;
+    } else if (self.orientation < -Math.PI) {
+      self.orientation += Math.PI*2;
+    }
     if (! self.pause) {
       self.y += self.rel_speed;
       if (self.launch_ctr > self.const_launch_ctr) {
@@ -123,6 +133,8 @@ AATurret.prototype = {
       self.launch_ctr++;
     }
     gamescreen.put_image(gamescreen, self.canvas_buffer, self.x-self.width/2, self.y-self.height/2);
+    gamescreen.put_triangle(gamescreen, "white", self.orientation, 2, self.x, self.y, -5, 5, 0, -10, 5, 5);
+    
     for (var i = 0; i < self.torpedos.length; i++) {
       if (self.torpedos[i].is_dead(self.torpedos[i])) {
         self.torpedos.splice(i, 1);

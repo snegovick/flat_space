@@ -10,6 +10,10 @@ Torpedo.prototype = {
   velocity: 0,
   const_velocity: 15,
   orientation: 0,
+
+  const_target_sector: 0.2,
+  const_target_dist: 0,
+  
   ttl: 10,
   dead: false,
   exploded: false,
@@ -52,11 +56,24 @@ Torpedo.prototype = {
     }
   },
 
-  find_closest_ahead: function(self, x, y, orientation, asteroids) {
-    
+  find_closest_ahead: function(self, asteroids) {
+    var idx = -1;
+    for (var i = 0; i < asteroids.length; i++) {
+      var ast = asteroids[i];
+      if (ast!=null) {
+        var angle = Math.atan2(ast.y-self.y, ast.x-self.x);
+        var dist = pt_to_pt_dist([self.x, self.y], [ast.x, ast.y]);
+        if ((Math.abs(self.orientation-angle)<self.const_target_sector)) {
+          min_dy = dist;
+          idx = i;
+        }
+      }
+    }
+    return idx;
   },
   
   init: function(self, x, y, asteroids, orientation, max_ang_vel) {
+    self.const_target_dist = gamescreen.height/10;
     self.start_dir = self.orientation+(Math.random()*0.2-0.1);
     self.velocity = 0;
     self.trail = [];
@@ -69,21 +86,7 @@ Torpedo.prototype = {
     self.sx = x;
     self.sy = y;
     var min_dy = gamescreen.height*2;
-    var idx = -1;
-    for (var i = 0; i < asteroids.length; i++) {
-      if (asteroids[i]!=null) {
-        if (Math.abs(self.x - asteroids[i].x) < gamescreen.width/5) {
-          var dy = self.y - asteroids[i].y;
-          //console.log("dy:"+dy+" min_dy:"+min_dy);
-          if (dy > gamescreen.height/10) {
-            if (dy < min_dy) {
-              min_dy = dy;
-              idx = i;
-            }
-          }
-        }
-      }
-    }
+    var idx = self.find_closest_ahead(self, asteroids);
     if (idx == -1) {
       self.tx = self.x;
       self.ty = self.y-10000;

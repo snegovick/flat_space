@@ -98,8 +98,9 @@ Tutorial_Stage.prototype = {
 
   last_msg: 0,
 
-  torpedo_launchers: [null, null, null],
-  tl_handlers: [0,0,0],
+  torpedo_launchers: null,
+  tl_handlers: null,
+  const_n_torpedo_launchers: 3,
 
   reset_all: function(self) {
     hud.reset_fuel(hud);
@@ -274,13 +275,15 @@ Tutorial_Stage.prototype = {
         self.set_delay(self, self.const_delay);
         self.state = self.wait_checkpoint;
         var x_pos = gamescreen.width/4;
-        for (var i = 0; i < self.torpedo_launchers.length; i++) {
+        self.tl_handlers = [];
+        self.torpedo_launchers = [];
+        for (var i = 0; i < self.const_n_torpedo_launchers; i++) {
           console.log("creating turret");
           var t = new AATurret();
-          t.init(t, x_pos, -100, -Math.PI/2);
+          t.init(t, x_pos, -100, Math.PI/2);
           x_pos+=gamescreen.width/4;
-          self.torpedo_launchers[i] = t;
-          self.tl_handlers[i] = gamelogic.add_object(gamelogic, t);
+          self.torpedo_launchers.push(t);
+          self.tl_handlers.push(gamelogic.add_object(gamelogic, t));
         }
       }
       break;
@@ -307,6 +310,11 @@ Tutorial_Stage.prototype = {
       break;
 
     case self.start_jump:
+      for (var i = 0; i < self.tl_handlers.length; i++) {
+        gamelogic.del_object(gamelogic, self.tl_handlers[i]);
+      }
+      self.tl_handlers = [];
+      self.torpedo_launchers = [];
       gamelogic.set_jump(gamelogic);
       console.log("start jump");
       self.jump_ctr = self.jump_ctr_max;

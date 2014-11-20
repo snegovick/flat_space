@@ -204,8 +204,6 @@ GameLogic.prototype = {
         rem.set_speed_step(rem, self.speed_step);
         rem_lst.push(rem);
       }
-      //console.log("remainders list");
-      //console.log(rem_lst);
 
       for (var i = 0; i < self.remainders.length; i++) {
         if (self.remainders[i] == null) {
@@ -217,7 +215,6 @@ GameLogic.prototype = {
           }
         }
       }
-      //console.log(self.remainders);
     }
   },
 
