@@ -12,6 +12,18 @@ var logic = function() {
     gamelogic.keyup(gamelogic, kc);
   });
 
+  gamescreen.set_touchstart_cb(gamescreen, function(kc) {
+    gamelogic.touchstart(gamelogic, kc);
+  });
+
+  gamescreen.set_touchmove_cb(gamescreen, function(kc) {
+    gamelogic.touchmove(gamelogic, kc);
+  });
+
+  gamescreen.set_touchend_cb(gamescreen, function(kc) {
+    gamelogic.touchend(gamelogic, kc);
+  });
+
   var drawAll = function() {
     map.draw(map);
     gamelogic.draw(gamelogic);

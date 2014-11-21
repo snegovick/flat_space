@@ -32,6 +32,18 @@ GameScreen.prototype = {
     window.addEventListener('keyup', cb, true);
   },
 
+  set_touchstart_cb: function(self, cb) {
+    window.addEventListener('touchstart', cb, true);
+  },
+
+  set_touchend_cb: function(self, cb) {
+    window.addEventListener('touchend', cb, true);
+  },
+
+  set_touchmove_cb: function(self, cb) {
+    window.addEventListener('touchmove', cb, true);
+  },
+
   get_text_w: function(self, cw, text) {
     return cw*text.length;
   },
@@ -724,6 +736,10 @@ Player.prototype = {
 
   grip_reach_dist: 0,
   torpedo: null,
+  touch_shoot: false,
+  shoot_ctr: 0,
+  const_shoot_ctr: 10,
+
   cur_speed_step: 0,
   speed_steps: [0,0,0,0,0],
   const_x_velocity: 0,
@@ -740,6 +756,14 @@ Player.prototype = {
 
   explode: function(self) {
     self.y_addition = -2*gamescreen.height;
+  },
+
+  set_touch_shoot: function(self) {
+    self.touch_shoot = true;
+  },
+
+  unset_touch_shoot: function(self) {
+    self.touch_shoot = false;
   },
 
   set_pause: function(self) {
@@ -806,10 +830,13 @@ Player.prototype = {
   },
 
   launch_torpedo: function(self, asteroids) {
-    if (self.torpedo == null) {
-      self.torpedo = new Torpedo();
-      self.torpedo.init(self.torpedo, self.x, self.y-self.r, asteroids);
-      self.torpedo.set_speed_step(self.torpedo, self.cur_speed_step);
+    if (self.shoot_ctr >= self.const_shoot_ctr) {
+      if (self.torpedo == null) {
+        self.torpedo = new Torpedo();
+        self.torpedo.init(self.torpedo, self.x, self.y-self.r, asteroids);
+        self.torpedo.set_speed_step(self.torpedo, self.cur_speed_step);
+      }
+      self.shoot_ctr = 0;
     }
   },
 
@@ -879,6 +906,14 @@ Player.prototype = {
       self.py = self.y;
       self.x = self.vx + gamescreen.width/2;
       self.y = self.vy + 4*gamescreen.height/5 + self.y_addition;
+    }
+
+    if (self.shoot_ctr <= self.const_shoot_ctr) {
+      self.shoot_ctr ++;
+    } else {
+      if (self.touch_shoot) {
+        self.launch_torpedo(self);
+      }
     }
 
     if (self.jump) {
@@ -1610,7 +1645,7 @@ Hud.prototype = {
   },
 
   reset_fuel: function(self) {
-    self.fuel_count = 90;
+    self.fuel_count = 0;
   },
 
   get_fuel: function(self) {
@@ -1994,6 +2029,38 @@ GameLogic.prototype = {
       self.right = false;
     }
 
+  },
+
+  touchstart: function(self, event) {
+    console.log("start");
+    console.log(event);
+    self.player.set_touch_shoot(self.player);
+    if (self.player.x - event.pageX > self.player.x_step) {
+      self.left = false;
+      self.right = true;
+    } else if (self.player.x - event.pageX < -self.player.x_step) {
+      self.left = true;
+      self.right = false;
+    }
+  },
+
+  touchend: function(self, event) {
+    console.log("end");
+    console.log(event);
+    self.player.unset_touch_shoot(self.player);
+    self.left = false;
+    self.right = false;
+  },
+
+  touchmove: function(self, event) {
+    console.log("move");
+    if (self.player.x - event.pageX > self.player.x_step) {
+      self.left = false;
+      self.right = true;
+    } else if (self.player.x - event.pageX < -self.player.x_step) {
+      self.left = true;
+      self.right = false;
+    }    
   },
 
   init: function(self) {
@@ -2387,6 +2454,18 @@ var logic = function() {
 
   gamescreen.set_keyup_cb(gamescreen, function(kc) {
     gamelogic.keyup(gamelogic, kc);
+  });
+
+  gamescreen.set_touchstart_cb(gamescreen, function(kc) {
+    gamelogic.touchstart(gamelogic, kc);
+  });
+
+  gamescreen.set_touchmove_cb(gamescreen, function(kc) {
+    gamelogic.touchmove(gamelogic, kc);
+  });
+
+  gamescreen.set_touchend_cb(gamescreen, function(kc) {
+    gamelogic.touchend(gamelogic, kc);
   });
 
   var drawAll = function() {

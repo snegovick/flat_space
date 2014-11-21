@@ -32,6 +32,18 @@ GameScreen.prototype = {
     window.addEventListener('keyup', cb, true);
   },
 
+  set_touchstart_cb: function(self, cb) {
+    window.addEventListener('touchstart', cb, true);
+  },
+
+  set_touchend_cb: function(self, cb) {
+    window.addEventListener('touchend', cb, true);
+  },
+
+  set_touchmove_cb: function(self, cb) {
+    window.addEventListener('touchmove', cb, true);
+  },
+
   get_text_w: function(self, cw, text) {
     return cw*text.length;
   },

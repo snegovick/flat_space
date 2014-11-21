@@ -316,6 +316,38 @@ GameLogic.prototype = {
 
   },
 
+  touchstart: function(self, event) {
+    console.log("start");
+    console.log(event);
+    self.player.set_touch_shoot(self.player);
+    if (self.player.x - event.pageX > self.player.x_step) {
+      self.left = false;
+      self.right = true;
+    } else if (self.player.x - event.pageX < -self.player.x_step) {
+      self.left = true;
+      self.right = false;
+    }
+  },
+
+  touchend: function(self, event) {
+    console.log("end");
+    console.log(event);
+    self.player.unset_touch_shoot(self.player);
+    self.left = false;
+    self.right = false;
+  },
+
+  touchmove: function(self, event) {
+    console.log("move");
+    if (self.player.x - event.pageX > self.player.x_step) {
+      self.left = false;
+      self.right = true;
+    } else if (self.player.x - event.pageX < -self.player.x_step) {
+      self.left = true;
+      self.right = false;
+    }    
+  },
+
   init: function(self) {
     var n_ast = 18*gamescreen.width*gamescreen.height/(800*800);
     n_ast = (n_ast>self.asteroids.length*0.6 ? self.asteroids.length*0.6 : n_ast)

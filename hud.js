@@ -73,7 +73,7 @@ Hud.prototype = {
   },
 
   reset_fuel: function(self) {
-    self.fuel_count = 90;
+    self.fuel_count = 0;
   },
 
   get_fuel: function(self) {

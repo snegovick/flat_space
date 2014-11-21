@@ -17,6 +17,10 @@ Player.prototype = {
 
   grip_reach_dist: 0,
   torpedo: null,
+  touch_shoot: false,
+  shoot_ctr: 0,
+  const_shoot_ctr: 10,
+
   cur_speed_step: 0,
   speed_steps: [0,0,0,0,0],
   const_x_velocity: 0,
@@ -33,6 +37,14 @@ Player.prototype = {
 
   explode: function(self) {
     self.y_addition = -2*gamescreen.height;
+  },
+
+  set_touch_shoot: function(self) {
+    self.touch_shoot = true;
+  },
+
+  unset_touch_shoot: function(self) {
+    self.touch_shoot = false;
   },
 
   set_pause: function(self) {
@@ -99,10 +111,13 @@ Player.prototype = {
   },
 
   launch_torpedo: function(self, asteroids) {
-    if (self.torpedo == null) {
-      self.torpedo = new Torpedo();
-      self.torpedo.init(self.torpedo, self.x, self.y-self.r, asteroids);
-      self.torpedo.set_speed_step(self.torpedo, self.cur_speed_step);
+    if (self.shoot_ctr >= self.const_shoot_ctr) {
+      if (self.torpedo == null) {
+        self.torpedo = new Torpedo();
+        self.torpedo.init(self.torpedo, self.x, self.y-self.r, asteroids);
+        self.torpedo.set_speed_step(self.torpedo, self.cur_speed_step);
+      }
+      self.shoot_ctr = 0;
     }
   },
 
@@ -172,6 +187,14 @@ Player.prototype = {
       self.py = self.y;
       self.x = self.vx + gamescreen.width/2;
       self.y = self.vy + 4*gamescreen.height/5 + self.y_addition;
+    }
+
+    if (self.shoot_ctr <= self.const_shoot_ctr) {
+      self.shoot_ctr ++;
+    } else {
+      if (self.touch_shoot) {
+        self.launch_torpedo(self);
+      }
     }
 
     if (self.jump) {
