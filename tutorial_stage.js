@@ -93,7 +93,7 @@ Tutorial_Stage.prototype = {
            "    Press SPACE to start again."],
 
   msg_fail: ["Oops looks like you will need new vessel!",
-           "    Press SPACE to start again."],
+           "    Press SPACE (or tap) to start again."],
 
 
   last_msg: 0,
@@ -361,7 +361,7 @@ Tutorial_Stage.prototype = {
 
     case self.wait_input:
       self.display_message(self, self.last_msg);
-      if (self.get_wait_keycode_state(self)) {
+      if (self.get_wait_keycode_state(self) || gamelogic.touch_active) {
         self.state = self.restart;
         self.reset_all(self);
       }
