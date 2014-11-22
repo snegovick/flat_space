@@ -2411,6 +2411,9 @@ GameLogic.prototype = {
       } else if (self.player.x - self.tt_x < -self.player.x_step) {
         self.left = false;
         self.right = true;
+      } else {
+        self.left = false;
+        self.right = false;
       }
     }
 
