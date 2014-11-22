@@ -193,7 +193,7 @@ Player.prototype = {
       self.shoot_ctr ++;
     } else {
       if (self.touch_shoot) {
-        self.launch_torpedo(self);
+        self.launch_torpedo(self, gamelogic.asteroids);
       }
     }
 

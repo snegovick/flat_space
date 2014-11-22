@@ -912,7 +912,7 @@ Player.prototype = {
       self.shoot_ctr ++;
     } else {
       if (self.touch_shoot) {
-        self.launch_torpedo(self);
+        self.launch_torpedo(self, gamelogic.asteroids);
       }
     }
 
@@ -2065,7 +2065,7 @@ GameLogic.prototype = {
 
   init: function(self) {
     var n_ast = 18*gamescreen.width*gamescreen.height/(800*800);
-    n_ast = (n_ast>self.asteroids.length*0.6 ? self.asteroids.length*0.6 : n_ast)
+    n_ast = (n_ast>self.asteroids.length*0.6 ? self.asteroids.length*0.6 : n_ast);
     self.natural_asteroids = Math.floor(n_ast);
     self.const_natural_asteroids = self.natural_asteroids;
     console.log("natural asteroids: "+self.natural_asteroids);
