@@ -339,6 +339,7 @@ GameLogic.prototype = {
 
   touchmove: function(self, event) {
     console.log("move");
+    console.log(event);
     if (self.player.x - event.pageX > self.player.x_step) {
       self.left = false;
       self.right = true;
