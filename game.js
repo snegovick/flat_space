@@ -1278,7 +1278,7 @@ Tutorial_Stage.prototype = {
     case self.check_torpedo_launch:
       self.display_message(self, self.msg_torpedo);
       //if (self.get_wait_keycode_state(self)) {
-      if (gamelogic.asteroids.length == 0) {
+      if (gamelogic.active_asteroids == 0) {
         self.msg_torpedo.pop();
         self.msg_torpedo.push("OK, now collect remainders.");
         self.state = self.wait_grip;
