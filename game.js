@@ -1832,6 +1832,11 @@ GameLogic.prototype = {
   jump: false,
   const_jump_asteroids: 10,
 
+  touch: false,
+  touch_active: false,
+  tt_x: 0, //touch target x
+  tt_y: 0,
+
   set_jump: function(self) {
     self.jump = true;
     self.speed_step = self.speed_step_max;
@@ -2032,36 +2037,31 @@ GameLogic.prototype = {
   },
 
   touchstart: function(self, event) {
+    self.touch = true;
+    self.touch_active = true;
     console.log("start");
-    console.log(event);
+    //console.log(event);
     self.player.set_touch_shoot(self.player);
-    if (self.player.x - event.touches[0].pageX > self.player.x_step) {
-      self.left = true;
-      self.right = false;
-    } else if (self.player.x - event.touches[0].pageX < -self.player.x_step) {
-      self.left = false;
-      self.right = true;
-    }
+    self.tt_x = event.touches[0].pageX;
+    self.tt_y = event.touches[0].pageY;
   },
 
   touchend: function(self, event) {
+    self.touch = true;
+    self.touch_active = false;
     console.log("end");
-    console.log(event);
+    //console.log(event);
     self.player.unset_touch_shoot(self.player);
     self.left = false;
     self.right = false;
   },
 
   touchmove: function(self, event) {
+    self.touch = true;
     console.log("move");
-    console.log(event);
-    if (self.player.x - event.touches[0].pageX > self.player.x_step) {
-      self.left = true;
-      self.right = false;
-    } else if (self.player.x - event.touches[0].pageX < -self.player.x_step) {
-      self.left = false;
-      self.right = true;
-    }    
+    //console.log(event);
+    self.tt_x = event.touches[0].pageX;
+    self.tt_y = event.touches[0].pageY;
   },
 
   init: function(self) {
@@ -2403,6 +2403,16 @@ GameLogic.prototype = {
 
     self.ast_pla_col(self);
     self.rem_draw(self);
+
+    if (self.touch_active) {
+      if (self.player.x - self.tt_x > self.player.x_step) {
+        self.left = true;
+        self.right = false;
+      } else if (self.player.x - self.tt_x < -self.player.x_step) {
+        self.left = false;
+        self.right = true;
+      }
+    }
 
     if (self.left) {
       self.player.move_left(self.player);
