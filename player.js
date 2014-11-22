@@ -191,10 +191,8 @@ Player.prototype = {
 
     if (self.shoot_ctr <= self.const_shoot_ctr) {
       self.shoot_ctr ++;
-    } else {
-      if (self.touch_shoot) {
-        self.launch_torpedo(self, gamelogic.asteroids);
-      }
+    } else if(self.touch_shoot && !self.jump) {
+      self.launch_torpedo(self, gamelogic.asteroids);
     }
 
     if (self.jump) {
