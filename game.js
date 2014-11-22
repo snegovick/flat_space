@@ -2036,11 +2036,11 @@ GameLogic.prototype = {
     console.log(event);
     self.player.set_touch_shoot(self.player);
     if (self.player.x - event.touches[0].pageX > self.player.x_step) {
-      self.left = false;
-      self.right = true;
-    } else if (self.player.x - event.touches[0].pageX < -self.player.x_step) {
       self.left = true;
       self.right = false;
+    } else if (self.player.x - event.touches[0].pageX < -self.player.x_step) {
+      self.left = false;
+      self.right = true;
     }
   },
 
@@ -2056,11 +2056,11 @@ GameLogic.prototype = {
     console.log("move");
     console.log(event);
     if (self.player.x - event.touches[0].pageX > self.player.x_step) {
-      self.left = false;
-      self.right = true;
-    } else if (self.player.x - event.touches[0].pageX < -self.player.x_step) {
       self.left = true;
       self.right = false;
+    } else if (self.player.x - event.touches[0].pageX < -self.player.x_step) {
+      self.left = false;
+      self.right = true;
     }    
   },
 
