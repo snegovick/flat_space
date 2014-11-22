@@ -1271,13 +1271,14 @@ Tutorial_Stage.prototype = {
       gamelogic.set_fuel_prob(gamelogic, 1);
       gamelogic.set_luck_prob(gamelogic, 1);
       gamelogic.create_new_asteroid(gamelogic, false, player.x, player.y-gamescreen.height/5, 2, Math.PI/2, -5);
-      self.msg_torpedo.push("Press SPACE");
-      self.set_wait_keycode(self, 32); // space
+      self.msg_torpedo.push("Press SPACE (or tap the screen)");
+      //self.set_wait_keycode(self, 32); // space
       break;
 
     case self.check_torpedo_launch:
       self.display_message(self, self.msg_torpedo);
-      if (self.get_wait_keycode_state(self)) {
+      //if (self.get_wait_keycode_state(self)) {
+      if (gamelogic.asteroids.length == 0) {
         self.msg_torpedo.pop();
         self.msg_torpedo.push("OK, now collect remainders.");
         self.state = self.wait_grip;
