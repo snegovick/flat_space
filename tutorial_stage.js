@@ -367,7 +367,7 @@ Tutorial_Stage.prototype = {
       }
       break;
       
-    default: 
+    default:
       break;
     }
   }
